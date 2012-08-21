@@ -1,9 +1,10 @@
 
-var easy_pg = function(title, obj, limit, cls){
+// Easy property grid
+var easy_pg = function(title, obj, limit){
     var p = new Ext.grid.PropertyGrid({
         title: title,
         columnWidth: 1,
-        cls: cls,
+        cls: 'layoutpad',
         autoHeight: true,
         autoWidth: true,
         hideHeaders: true,
@@ -15,6 +16,35 @@ var easy_pg = function(title, obj, limit, cls){
     p.getColumnModel().getColumnById('name').sortable = false; // set sorting of first column to false
     p.setSource(limit_dict(obj, limit)); // Now load data
     return p;
+}
+
+// Easy grid panel
+var easy_gp = function(title, store, columns, callback){
+
+    return new Ext.grid.GridPanel({
+                    title: title,
+                    cm: new Ext.grid.ColumnModel({
+                        defaults: {
+                            sortable: true,
+                            fixed: true
+                        },
+                        columns: columns
+                    }),                   
+                    store: store, 
+                    cls: 'layoutpad',
+                    layout: 'fit', 
+                    autoHeight: true, 
+                    stripeRows: true, 
+                    viewConfig: {
+                        scrollOffset: 0, 
+                        forceFit:true
+                    },
+                    listeners: { 
+                        cellclick: function(grid, row, col, e)
+                            { callback(store.getAt(row).get("id")); }
+                        }
+                    }
+    );
 }
 
 var setHistory = function(fn, val){   
@@ -49,6 +79,11 @@ var jsonstore = function(dataset, fieldlist) {
     } 
     var store = new Ext.data.ArrayStore({fields: cleanfieldlist});
     var data = [];
+    
+    if(typeof dataset === "undefined"){
+        console.log("Dataset to jsonstore is undefined");
+        return;
+    }
     
     for(var i = 0; i < dataset.length; i++){
         var d = dataset[i];

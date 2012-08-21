@@ -1,7 +1,8 @@
+
+// EVENT HANDLING, mainly UI clicks, such as menues
 var listeners = {};
 
-// Simple event handling
-
+// Event: Broadcast that a named event fired
 var broadcast = function(event, params){
     return function(){
         if(listeners[event] == null){
@@ -15,6 +16,7 @@ var broadcast = function(event, params){
     };
 };
 
+// Event: Subscribe to named events 
 var listen = function(event, handler){
     if(listeners[event] == null){
         listeners[event] = [handler];
@@ -24,6 +26,9 @@ var listen = function(event, handler){
     }
 }
 
+
+// Given a dict, return a new dict containing only the keys 
+// specificed by names
 var limit_dict = function(dict, names){
 
     var obj = {};
@@ -36,11 +41,15 @@ var limit_dict = function(dict, names){
 
 }
 
+
+// Given an object and string, resolve the element in the object, given a string.
+// str = a.b.c resolves obj.a.b.c as a string
+// str = a.*.c resolves obj.a.b[0].c, ... obj.a.b[n].c as a string
 var resolveobj = function(str, obj){
     
-    if (str.indexOf(".") < 1){
-        return obj[str]
-    }
+    if(obj == null) return null;
+    
+    if (str.indexOf(".") < 1){ return obj[str]}
     else{  
         var o = obj;
         var ss = str.split(".");
@@ -60,9 +69,15 @@ var resolveobj = function(str, obj){
                 break;
             }
             else{
+                if (o == null) return null;
                 var o = o[sss];
             }
         }
         return o;
     }
+}
+
+// Capitalize the first letter of a string
+function capitalize(string) {
+	return string.substr(0,1).toUpperCase() + string.substr(1);
 }

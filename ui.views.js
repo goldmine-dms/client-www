@@ -1,473 +1,80 @@
-/* BROWSE VIEWS */
-
-var browseSites = function(){
-
-    setHistory("browseSites");
-
-
-    $.jsonRPC.request('site.listing', {
-            params: [""], 
-            success: function(list) {
-            
-                app.main.prepare();
-                app.main.setTitle("Browse Sites");
-    
-                var store = new Ext.data.ArrayStore({fields: ['name', 'site']});
-                
-                var data = [];
-                
-                for(var i = 0; i < list.length; i++){
-                    var site = list[i];
-                    data.push([site['name'], site]);
-                }
-                      
-                store.loadData(data);
-                
-                app.left.prepare();
-                
-                app.left.add(new Ext.form.TextField({
-                    emptyText: "Search",
-                    enableKeyEvents: true,
-                    listeners: {
-                        keyup: function(field){ store.filter('name',field.getValue(), true, false); }
-                    }
-                    
-                }));
-                
-                var lv = new Ext.list.ListView({
-                    emptyText: 'No sites matching query', 
-		    columns: [{
-                        header: "Site", 
-                        dataIndex: "name"
-                    }], 
-                    store: store,
-                });
-                
-                lv.on('click', function(sthis, nodeid){
-                    showSite(store.getAt(nodeid).get("site")["id"]);
-                });
-                
-                app.left.add(lv);
-                
-            }
-    });       
+views.browse.project = function(){
+    views.browse.master("project", "project.list", "name", views.show.project);
 }
 
-var browseMap = function(){
+views.browse.activity = function(project){
+    if(typeof project !== "undefined") project = [project];
+    views.browse.master("activity", "activity.list", "name", views.show.activity, project);
+}
 
-    setHistory("browseMap");
+views.browse.datatype = function(){
+    views.browse.master("datatype", "dataset.type.list", "name", views.show.type);
+}
 
+views.map.project = function(){
+    views.map.master("project", "project.list", "name", views.show.project);
+}
 
-    $.jsonRPC.request('site.listing', {
-            params: [""],
-            success: function(list) {
-  
-                app.main.prepare();
-                app.main.setTitle("Browse Map");
-  
-                var data = [];  		
+views.map.activity = function(project){
+    if(typeof project !== "undefined") project = [project];
+    views.map.master("activity", "activity.list", "name", views.show.activity, project);
+}
 
-                for(var i = 0; i < list.length; i++){
-                    var site = list[i];
- 		    if(site['latitude'] != null){
-                        var frame = {marker: {title: site['name']}, 
- 			             lat: site['latitude'], 
-		 	             lng: site['longitude'], 
-                                     iconx: 'site', 
-                                     link: '#showSite:' + site['id']};
-		         data.push(frame);
-		    }
+views.show.project = function(id){
+    
+    var header = ["ID", "Name", "Location.Latitude", "Location.Longitude", "Location.Elevation"];
+    
+    views.show.master(id, "project", "project.get", "name", header, "description", function(obj){
+        
+        var store = jsonstore(obj.activities, ['name', 'description', 'id']);
+       
+        var columns = [
+            { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
+            { header: 'Name', width: 250, dataIndex: 'name'},
+            { header: 'Description', fixed: false, dataIndex: 'description'}
+        ];
+        
+        var d = [easy_gp('Activities', store, columns, views.show.activity)];
+        views.show.addmarkers(obj.activities, "42C0FB", views.show.activity);
+        return d;
+        
+    });
 
-		    for(var j = 0; j < site['cores'].length; j++){
-         		if(site['cores'][j]['latitude'] != null){ 
-			    var id = site['cores'][j]['id'];
-			    var frame = {marker: {title: site['cores'][j]['name']},
-                                        lat: site['cores'][j]['latitude'],
-                                        lng: site['cores'][j]['longitude'],
-                                        iconx: 'site',
-                                        listeners: {
-					   click: showCore.createCallback(id, true),
-                                        }
-					};
-                            data.push(frame);
-			 }
-                    }
-                }
- 		
-		var wrap = new Ext.Panel({
-                    layout: 'fit',
-	            border: false,
-                    style: 'height: 100%',
-		    items: [{
-	            	xtype: 'gmappanel',
-                        gmapType: 'map',
-                        zoomLevel: 2,
-			setCenter: {
-			    lat: 0,
-			    lng: 0
-			},
-			markers: data, 
-                    }],
-		});
+}
 
-		app.main.add(wrap);
-		app.main.doLayout();
- 
-            }
+views.show.activity = function(id){
+    
+    var header = ["ID", "Name", "Location.Latitude", "Location.Longitude", "Location.Elevation"];
+    
+    views.show.master(id, "activity", "activity.get", "name", header, "description", function(obj){
+        
+        var store = jsonstore(obj.studies, ['name', 'description', 'id']);
+        var columns = [
+            { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
+            { header: 'Name', width: 250, dataIndex: 'name'},
+            { header: 'Description', fixed: false, dataIndex: 'description'}
+        ];
+        
+        return [easy_gp('Studies', store, columns, views.show.study)]
     });
 }
 
-var browseStandaloneStudies = function(){
-
-    setHistory("browseStandaloneStudies");
-
-
-    $.jsonRPC.request('study.listing', {
-        params: [null, true], 
-        success: function(list) {
-
-        app.main.prepare();
-        app.main.setTitle("Browse Standalone Studies");
-
-        var store = new Ext.data.ArrayStore({fields: ['name', 'study']});
-
-        var data = [];
-
-        for(var i = 0; i < list.length; i++){
-        var study = list[i];
-        data.push([study['name'], study]);
-        }
-
-        store.loadData(data);
-
-        app.left.prepare();
-
-        app.left.add(new Ext.form.TextField({
-            emptyText: "Search",
-            enableKeyEvents: true,
-            listeners: {
-                keyup: function(field){ store.filter('name',field.getValue(), true, false); }
-            }
-        }));
-
-        var lv = new Ext.list.ListView({
-            emptyText: 'No studies matching query', 
-            columns: [{
-            header: "Study", 
-            dataIndex: "name"
-        }], 
-        store: store,
-        });
-
-        lv.on('click', function(sthis, nodeid){
-                showStudy(store.getAt(nodeid).get("study")["id"]);
-                });
-
-        app.left.add(lv);
-
-        }
-    });       
+views.show.study = function(id){
+    alert("Study: " + id);
 }
 
-
-var browseMyStudies = function(){
-
-    setHistory("browseMyStudies");
-
-
-    $.jsonRPC.request('study.my', {
-        params: [], 
-        success: function(list) {
-
-        app.main.prepare();
-        app.main.setTitle("Browse My Studies");
-
-        var store = new Ext.data.ArrayStore({fields: ['name', 'study']});
-
-        var data = [];
-
-        for(var i = 0; i < list.length; i++){
-        var study = list[i];
-        data.push([study['name'], study]);
-        }
-
-        store.loadData(data);
-
-        app.left.prepare();
-
-        app.left.add(new Ext.form.TextField({
-            emptyText: "Search",
-            enableKeyEvents: true,
-            listeners: {
-                keyup: function(field){ store.filter('name',field.getValue(), true, false); }
-            }
-        }));
-
-        var lv = new Ext.list.ListView({
-            emptyText: 'No studies matching query', 
-            columns: [{
-            header: "Study", 
-            dataIndex: "name"
-        }], 
-        store: store,
-        });
-
-        lv.on('click', function(sthis, nodeid){
-                showStudy(store.getAt(nodeid).get("study")["id"]);
-                });
-
-        app.left.add(lv);
-
-        }
-    });       
+views.show.datatype = function(id){
+    alert("Type: " + id);
 }
 
-
-var browseTypes = function(){
-
-    setHistory("browseTypes");
-
-
-    $.jsonRPC.request('type.listing', {
-        params: [""],
-        success: function(list) {
-
-        app.main.prepare();
-        app.main.setTitle("Browse Types");
-
-        var store = new Ext.data.ArrayStore({fields: ['name', 'type']});
-
-        var data = [];
-
-        for(var i = 0; i < list.length; i++){
-        var type = list[i];
-        data.push([type['name'], type]);
-        }
-
-        store.loadData(data);
-
-        app.left.prepare();
-
-        app.left.add(new Ext.form.TextField({
-        emptyText: "Search",
-        enableKeyEvents: true,
-        listeners: {
-        keyup: function(field){ store.filter('name',field.getValue(), true, false); }
-        }
-
-        }));
-
-        var lv = new Ext.list.ListView({
-        emptyText: 'No types matching query',
-        columns: [{
-        header: "Type",
-        dataIndex: "name"
-        }],
-        store: store,
-        });
-
-        lv.on('click', function(sthis, nodeid){
-                showType(store.getAt(nodeid).get("type")["id"]);
-                });
-
-        app.left.add(lv);
-
-        }
-    });
+views.show.dataset = function(id){
+    alert("Dataset: " + id);
 }
 
 
 
-/* SHOW VIEWS */
+/*
 
-var showSite = function(id){
-    
-     setHistory("showSite", id);
-    
-     $.jsonRPC.request('site.get', {
-            params: [id], 
-            success: function(site) {
-            
-                app.main.prepare();
-                app.main.setTitle("Show Site");
-                
-                var coreStore = jsonstore(site.cores, ['name', 'description', 'id']);
-                
-                var wrap = new Ext.Panel({
-
-                    layout: 'fit',
-                    border: false,
-                    items: [
-                        {   
-                            border: false,
-                            layout: 'column',
-                            autoHeight: true,
-                            items: [
-                                
-                                easy_pg('Site', site, ["ID", "Name", "Latitude", "Longitude", "Elevation"], 'layoutpad'),
-                                
-                                {
-                                    xtype: 'panel',
-                                    layout: 'fit',
-                                    width: 400,
-                                    height: 300,
-                                    cls: 'layoutpad',
-                                    title: 'Map',
-                                    hidden: site['latitude'] == null,
-                                    items: [  
-                                        {  
-                                            xtype: 'gmappanel',  
-                                            gmapType: 'map',
-                                            zoomLevel: 3,  
-                                            setCenter: {  
-                                                lat: site['latitude'],  
-                                                lng: site['longitude'],  
-                                                marker: {  
-                                                    title: site['name']  
-                                                }  
-                                            }  
-                                        }  
-                                    ],
-                                },
-                            ]
-
-                        },
-                        
-                        {
-                            xtype: 'panel',
-                            layout: 'fit',
-                            colspan: 2,
-                            cls: 'layoutpad txt',
-                            html: site["description"],
-                            hidden: site["description"] == null,
-                            title: 'Description'
-                        },
-                        
-                        
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Name', width: 250, dataIndex: 'name'},
-                                { header : 'Description', dataIndex: 'description', id: 'description-column'},
-                            ],
-                            store: coreStore,
-                            cls: 'layoutpad',
-                            title: 'Cores',
-                            autoHeight: true,
-                            stripeRows: true,
-                            autoExpandColumn: 'description-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showCore(coreStore.getAt(row).get("id")); }
-                            }
-                            
-                        })
-                    ]
-                });
-                                
-    
-                app.main.add(wrap); 
-                app.main.doLayout();
-                
-            }
-    });  
-}
-
-
-var showCore = function(id){
-
-     setHistory("showCore", id);
-    
-     $.jsonRPC.request('core.get', {
-            params: [id], 
-            success: function(core) {
-            
-                app.main.prepare();
-                app.main.setTitle("Show Core"); 
-                
-                var studyStore = jsonstore(core.studies, ['name', 'description', 'id']);;
-                
-                var wrap = new Ext.Panel({
-
-                    layout: 'fit',
-                    border: false,
-                    items: [
-                        {   
-                            border: false,
-                            layout: 'column',
-                            autoHeight: true,
-                            items: [
-                                
-                                easy_pg('Core', core, ["ID", "Name", "Latitude", "Longitude", "Elevation"], 'layoutpad'),
-                                
-                                {
-                                    xtype: 'panel',
-                                    layout: 'fit',
-                                    width: 400,
-                                    height: 300,
-                                    cls: 'layoutpad',
-                                    title: 'Map',
-                                    hidden: core['latitude'] == null,
-                                    items: [  
-                                        {  
-                                            xtype: 'gmappanel',  
-                                            gmapType: 'map',
-                                            zoomLevel: 3,  
-                                            setCenter: {  
-                                                lat: core['latitude'],  
-                                                lng: core['longitude'],  
-                                                marker: {  
-                                                    title: core['name']  
-                                                }  
-                                            }  
-                                        }  
-                                    ],
-                                },
-                            ]
-
-                        },
-                        
-                        {
-                            xtype: 'panel',
-                            layout: 'fit',
-                            colspan: 2,
-                            cls: 'layoutpad txt',
-                            html: core["description"],
-                            hidden: core["description"] == null,
-                            title: 'Description'
-                        },
-                        
-                        
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Name', width: 250, dataIndex: 'name'},
-                                { header : 'Description', dataIndex: 'description', id: 'description-column'},
-                            ],
-                            store: studyStore,
-                            cls: 'layoutpad',
-                            title: 'Studies',
-                            autoHeight: true,
-                            stripeRows: true,
-                            autoExpandColumn: 'description-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showStudy(studyStore.getAt(row).get("id")); }
-                            }
-                            
-                        })
-                    ]
-                });
-                                
-    
-                app.main.add(wrap); 
-                app.main.doLayout();
-                
-            }
-    });  
-}
 
 
 var showStudy = function(id){
@@ -827,7 +434,7 @@ var showType = function(id){
                             layout: 'fit',
                             columns: [
                                 { header : 'ID', width: 250, dataIndex: 'id'},
-				{ header : 'Description', width: 250, dataIndex: 'description'},
+                                { header : 'Description', width: 250, dataIndex: 'description'},
                                 { header : 'Measurement Type', width: 250, dataIndex: 'xtype.name'},
                                 { header : 'Parameter Types', dataIndex: 'params.ytype.name', id: 'description-column'},
                             ],
@@ -855,4 +462,4 @@ var showType = function(id){
             }
     });  
 }
-
+*/

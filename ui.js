@@ -14,26 +14,41 @@ var toolbar = new Ext.Toolbar({
             text: 'My Data',
             id: 'mydatamenu',
             menu: [
-                {text: "Studies", handler: broadcast("menu.mydata.studies")}
+                {text: "Studies", handler: broadcast("menu.mydata.studies")},
+                {text: "Favorites", handler: broadcast("menu.mydata.favorites")},
+                {text: "Recent", handler: broadcast("menu.mydata.recent")},
+                {text: "Import", handler: broadcast("menu.mydata.importer")}
             ]
         }, 
         {
             text: 'Browse',
             id: 'browsemenu',
+            menu: [        
+                {text: "Map", menu: [
+                    {text: "Project", handler: broadcast("menu.browse.map.project")},
+                    {text: "Activity", handler: broadcast("menu.browse.map.activity")}
+                ]},
+                '-',
+                {text: "Project", handler: broadcast("menu.browse.project")},
+                {text: "Activity", handler: broadcast("menu.browse.activity")},
+                {text: "Datatype", handler: broadcast("menu.browse.datatype")}
+
+            ]
+        }, 
+        {
+            text: 'Administration',
+            id: 'adminmenu',
             menu: [             
-                {text: "Sites", handler: broadcast("menu.browse.sites")},
-                {text: "Standalone Studies", handler: broadcast("menu.browse.sastudies")},
-                {text: "Map", handler: broadcast("menu.browse.map")},
-                {text: "Types", handler: broadcast("menu.browse.types")}
+                {text: "Dataset Curation", handler: broadcast("menu.admin.curate")}
             ]
         }, 
         '->',
-/*        {
+        {
             xtype: 'textfield',
             name: 'searchfield',
             id: 'searchfield',
             emptyText: 'Enter search term'
-        },*/
+        },
         '-', 
         {
             text: 'Not logged in',

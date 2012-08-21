@@ -4,13 +4,16 @@ a login window or the main user interface.
 */
 
 
+/* Bind menu clicks to functions */
 
-listen("menu.user.logout", loginWindow);
-listen("menu.browse.sites", browseSites);
-listen("menu.browse.map", browseMap);
-listen("menu.browse.types", browseTypes);
-listen("menu.browse.sastudies", browseStandaloneStudies);
-listen("menu.mydata.studies", browseMyStudies);
+listen("menu.user.logout",          loginWindow);
+listen("menu.browse.project",       views.browse.project);
+listen("menu.browse.activity",      views.browse.activity);
+listen("menu.browse.map.project",   views.map.project);
+listen("menu.browse.map.activity",  views.map.activity);
+listen("menu.browse.datatype",      views.browse.datatype);
+
+//listen("menu.admin.restart",        restartServer);
 
 $(function() {
                 
