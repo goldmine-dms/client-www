@@ -1,23 +1,35 @@
 views.browse.project = function(){
-    views.browse.master("project", "project.list", "name", views.show.project);
+    views.browse.master("project", "project.all", "name", views.show.project);
 }
 
 views.browse.activity = function(project){
     if(typeof project !== "undefined") project = [project];
-    views.browse.master("activity", "activity.list", "name", views.show.activity, project);
+    views.browse.master("activity", "activity.all", "name", views.show.activity, project);
+}
+
+views.browse.study = function(){
+    views.browse.master("study", "study.all", "name", views.show.study);
+}
+
+views.browse.my_study = function(){
+    views.browse.master("my_study", "study.all", "name", views.show.study, [false, true]);
 }
 
 views.browse.datatype = function(){
-    views.browse.master("datatype", "dataset.type.list", "name", views.show.type);
+    views.browse.master("datatype", "dataset.type.all", "name", views.show.datatype);
+}
+
+views.browse.tempfile = function(){
+    views.browse.master("tempfile", "tempfile.all", "name", views.show.tempfile);
 }
 
 views.map.project = function(){
-    views.map.master("project", "project.list", "name", views.show.project);
+    views.map.master("project", "project.all", "name", views.show.project);
 }
 
 views.map.activity = function(project){
     if(typeof project !== "undefined") project = [project];
-    views.map.master("activity", "activity.list", "name", views.show.activity, project);
+    views.map.master("activity", "activity.all", "name", views.show.activity, project);
 }
 
 views.show.project = function(id){
@@ -34,8 +46,8 @@ views.show.project = function(id){
             { header: 'Description', fixed: false, dataIndex: 'description'}
         ];
         
-        var d = [easy_gp('Activities', store, columns, views.show.activity)];
-        views.show.addmarkers(obj.activities, "42C0FB", views.show.activity);
+        var d = [widgets.easy_gp('Activities', store, columns, views.show.activity)];
+        views.show.master.addmarkers(obj.activities, "42C0FB", views.show.activity);
         return d;
         
     });
@@ -55,159 +67,177 @@ views.show.activity = function(id){
             { header: 'Description', fixed: false, dataIndex: 'description'}
         ];
         
-        return [easy_gp('Studies', store, columns, views.show.study)]
-    });
+        return [widgets.easy_gp('Studies', store, columns, views.show.study)]
+    },
+    function(obj){
+
+        var backProject = new Ext.Action({
+            text: 'Project (' + obj.project.name + ')',
+            icon: 'icons/arrow_left.png',
+            handler: function(){
+                views.show.project(obj.project.id);
+            }               
+        });
+
+        return [backProject];
+    }
+
+    );
 }
 
 views.show.study = function(id){
-    alert("Study: " + id);
+    
+    var header = ["ID", "Name", "Owner.Fullname"];
+    
+    views.show.master(id, "study", "study.get", "name", header, "description", function(obj){
+        
+        var datasetstore = jsonstore(obj.datasets, ['description', 'type', 'created', 'closed', 'curation_status', 'id']);
+        var datasetcolumns = [
+            { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
+            { header: '', width: 24, dataIndex: 'closed', renderer: function(o){
+                if(o) return "<img src='icons/lock.png' title='Closed'/>";
+                else return "<img src='icons/pencil.png' title='Open'/>";
+            }},
+            { header: 'Type', width: 100, dataIndex: 'type'},
+            { header: 'Created', width: 175, dataIndex: 'created'},
+            { header: 'Curation', width: 75, dataIndex: 'curation_status'},
+            { header: 'Description', fixed: false, dataIndex: 'description'}
+
+        ];
+        
+        var activitystore = jsonstore(obj.activities, ['name', 'description', 'id']);
+        var activitycolumns = [
+            { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
+            { header: 'Name', width: 250, dataIndex: 'name'},
+            { header: 'Description', fixed: false, dataIndex: 'description'}
+        ];
+        
+        return [
+            widgets.lineage(id),
+            widgets.easy_gp('Datasets', datasetstore, datasetcolumns, views.show.dataset),
+            widgets.easy_gp('Referenced activities', activitystore, activitycolumns, views.show.activity)
+        ]
+    },
+    function(obj){
+        var activityMenu = [];
+
+        for(var i = 0; i < obj.activities.length; i++){
+            var activity_id = obj.activities[i].id;
+            var activity = {
+                text: obj.activities[i].name,
+                handler: function(){
+                    views.show.activity(activity_id);  
+                }
+            };
+            activityMenu.push(activity);
+        }
+
+        var backActivity = new Ext.Action({
+            text: 'Activities (' + obj.activities.length + ')',
+            icon: 'icons/arrow_left.png',
+            menu: activityMenu              
+        });
+
+        return [backActivity];
+    }
+    );
 }
 
 views.show.datatype = function(id){
-    alert("Type: " + id);
+    var header = ["ID", "Name", "Unit"];
+    views.show.master(id, "datatype", "dataset.type.get", "name", header, "description");
 }
 
 views.show.dataset = function(id){
-    alert("Dataset: " + id);
+    
+    var header = ["ID", "Description", "Type", "Created", "Creator.Fullname", "Closed", "Curated", "Curated_by", "Curation_status"];
+    
+    views.show.master(id, "dataset", "dataset.get", "description", header, undefined,        
+    function(obj){
+        // content
+        return widgets.dataset[obj.type](id)
+    },
+    function(obj){
+        // tbar
+        var backStudy = new Ext.Action({
+            text: 'Study (' + obj.study.name + ')',
+            icon: 'icons/arrow_left.png',
+            handler: function(){
+                views.show.study(obj.study.id);
+            }               
+        });
+
+        var favorite = new Ext.Action({
+            icon: 'icons/heart_gray.png',
+            handler: function(){
+                console.log("dataset.favorite", obj.id);
+                console.log(favorite);
+                favorite.items[0].setIcon('icons/heart.png');
+            }               
+        });
+
+        return [backStudy, '->', favorite];
+    });
+}
+
+views.show.tempfile = function(id){
+    var header = ["Name", "Size", "Accessed", "Modified", "Created"];
+    views.show.master(id, "tempfile", "tempfile.info", "name", header, undefined, function(obj){
+
+        var wrap = [];
+        var toolbar = new Ext.Panel({
+                layout: 'fit',
+                cls: 'layoutpad',
+                height: 70,
+                items: [
+                    {xtype: 'toolbar', items: [
+                        {xtype: 'tbspacer', width: 5},
+                        {
+                            text: '<b>Download</b>',
+                            handler: function(){
+                                //FIXME: hardcoded URL
+                                downloadURL('/rest/tempfile.get/' + obj.id);
+                            }
+                        },
+                        {
+                            text: 'Delete',
+                            handler: function(){
+
+                                Ext.Msg.confirm('Confirm deletion', 'Filename: "' + obj.id + '"', function(btn){
+                                    if(btn == 'yes'){
+                                        $.jsonRPC.request("tempfile.delete", {
+                                            params: [obj.id],  
+                                            success: function(){
+                                                views.browse.tempfile();
+                                            }
+                                        });
+                                    }
+                                });   
+                            }
+                        },
+                    ]}
+                ]
+            });
+
+            wrap.push(toolbar);
+            return wrap;
+    });
 }
 
 
 
-/*
+/*                
 
-
-
-var showStudy = function(id){
-     
-     setHistory("showStudy", id);
-    
-     $.jsonRPC.request('study.get', {
-            params: [id], 
-            success: function(study) {
-            
-                app.main.prepare();
-                app.main.setTitle("Show Study");
-                var coreStore = jsonstore(study.cores, ['name', 'description', 'id']);;
-                
-                var datasetStore = jsonstore(study.datasets, ['id', 'description', 'xtype.name', 'params*.ytype.name']);
-                
-                var wrap = new Ext.Panel({
-
-                    layout: 'fit',
-                    border: false,
-                    items: [
-                        {   
-                            border: false,
-                            layout: 'column',
-                            autoHeight: true,
-                            items: [
-                                
-                                easy_pg('Study', study, ["ID", "Name" ,"Owner.Fullname"], 'layoutpad'),
-                                
-                            ]
-
-                        },
-                        
-                        {
-                            xtype: 'panel',
-                            layout: 'fit',
-                            colspan: 2,
-                            cls: 'layoutpad txt',
-                            html: study["description"],
-                            hidden: study["description"] == null,
-                            title: 'Description'
-                        },
-                        
-                        {
-                            xtype: 'panel',
-                            layout: 'fit',
-                            colspan: 2,
-                            cls: 'layoutpad',
-                            collapsible: 'true',
-                            title: 'Lineage',
-                            hidden: true,
-                            autoHeight: true,
-                            html: '<div id="lineage"></div>',
-                            id: 'lineagewrap'
-                        },
-                        
-                        
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Description', width: 250, dataIndex: 'description'},
-                                { header : 'Measurement', width: 250, dataIndex: 'xtype.name'},
-                                { header : 'Parameters', dataIndex: 'params.ytype.name', id: 'ytype-column'},
-                            ],
-                            store: datasetStore,
-                            cls: 'layoutpad',
-                            title: 'Datasets',
-                            autoHeight: true,
-                            stripeRows: true,
-                            hidden: study.datasets.length ==0,
-                            autoExpandColumn: 'ytype-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showDataset(datasetStore.getAt(row).get("id")); }
-                            }
-                            
-                        }),
-
-
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Name', width: 250, dataIndex: 'name'},
-                                { header : 'Description', dataIndex: 'description', id: 'description-column'},
-                            ],
-                            store: coreStore,
-                            cls: 'layoutpad',
-                            title: 'Cores',
-                            autoHeight: true,
-                            stripeRows: true,
-                            hidden: study.cores.length == 0,
-                            autoExpandColumn: 'description-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showCore(coreStore.getAt(row).get("id")); }
-                            }
-                            
-                        })
-                    ]
-                });
-                                
-    
-                app.main.add(wrap); 
-                app.main.doLayout();
-
-                if(study.datasets.length > 1){
-                    lineageinto(id, '#lineage', Ext.getCmp("lineagewrap"));
-                }
-                
-            }
-    });  
-}
-
-var showDataset = function(id){
-     
-     setHistory("showDataset", id);
-    
-     $.jsonRPC.request('dataset.get', {
-            params: [id], 
-            success: function(dataset) {
-            
-                app.main.prepare();
-                app.main.setTitle("Show Dataset");
-                
+               
                 var paramsStore = jsonstore(
                     dataset.params, ['id', 'ytype.name', 'ytype.unit', 
                                     'ytype.species', 'ytype.description', 
                                     'ytype.classification', 'ytype.id']);
+                                    * 
                 var metadataStore = jsonstore(
                     dataset.metadata, ['id', 'annotation', 'params.length', 
                                        'created', 'creator.fullname', 'params']);
+                                       * 
                 var expander = new Ext.ux.grid.RowExpander({
                     handler : function(row){
                         var data = row.data.params;
@@ -231,7 +261,79 @@ var showDataset = function(id){
                         }); 
                         
                         return p;
+                    },var toolbar = new Ext.Panel({
+                layout: 'fit',
+                cls: 'layoutpad',
+                height: 70,
+                items: [
+                    {xtype: 'toolbar', items: [{xtype: 'tbspacer', width: 5},
+                    {
+                            text: '<b>Download</b>',
+                            handler: function(){
+                                widgets.dataset.sequence.download(id);
+                            }
                     },
+                    {xtype: 'tbspacer', width: 5},
+                    {
+                        text: 'Plotting',
+                        menu: [
+                            {
+                                text: 'X-axis', menu: [
+                                {
+                                    text: 'Logarithmic', 
+                                    xtype: 'menucheckitem',
+                                    id: 'sequence.plot.x.log',
+                                    handler: widgets.dataset.sequence.plot.redraw
+                                },
+                                {
+                                    text: 'Inverted', 
+                                    xtype: 'menucheckitem',
+                                    id: 'sequence.plot.x.inverted',
+                                    handler: widgets.dataset.sequence.plot.redraw
+                                }
+                            ]},
+                            {   text: 'Y-axis', menu: [
+                                {
+                                    text: 'Logarithmic', 
+                                    xtype: 'menucheckitem',
+                                    id: 'sequence.plot.y.log',
+                                    handler: widgets.dataset.sequence.plot.redraw
+                                },
+                                {
+                                    text: 'Inverted', 
+                                    xtype: 'menucheckitem',
+                                    id: 'sequence.plot.y.inverted',
+                                    handler: widgets.dataset.sequence.plot.redraw
+                                }
+                            ]}
+                        ]
+                    },
+                    {xtype: 'tbspacer', width: 5},
+                    {
+                        text: 'Analysis',
+                        menu: [
+                            {text: 'Compare with other dataset'}
+                        ]
+                    },
+                    {xtype: 'tbspacer', width: 5},
+                    {
+                        text: 'Metadata',
+                        menu: [
+                            {text: 'Annotate'}
+                        ]
+                    },
+                    {xtype: 'tbspacer', width: 5},
+                    {
+                        text: 'Administration',
+                        menu: [
+                            {text: 'Close dataset'}
+                        ]
+                    }
+                    ]}
+                ]
+            });
+
+            wrap.push(toolbar);
                     expandOnDblClick: false,
                 });
 
@@ -260,47 +362,7 @@ var showDataset = function(id){
                             ]
                         },
                         
-                        {
-                            xtype: 'panel',
-                            layout: 'fit',
-                            colspan: 2,
-                            cls: 'layoutpad',
-                            title: 'Plot',
-                            hidden: true,
-                            autoHeight: true,
-                            html: '<div id="figureoverview"></div><div id="figure"></div><div id="figurexlabel">.</div>',
-                            id: 'figurewrap'
-                        },
-                            
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Name', width: 250, dataIndex: 'ytype.name'},
-                                { header : 'Unit', width: 150, dataIndex: 'ytype.unit'},
-                                { header : 'Species', width: 250, dataIndex: 'ytype.species'},
-                                { header : 'Classification', width: 250, dataIndex: 'ytype.classification'},
-                                { header : 'Type', width: 250, dataIndex: 'ytype.id'},
-                                { header : 'Description', dataIndex: 'ytype.description', id: 'ytype-column'},
-                            ],
-                            store: paramsStore,
-                            cls: 'layoutpad',
-                            title: 'Parameters',
-                            autoHeight: true,
-                            stripeRows: true,
-                            autoExpandColumn: 'ytype-column',
-                            viewConfig: {scrollOffset: 0},
-                             listeners: {
-                                celldblclick: function(grid, row, col, e){ 
-                                    Ext.getCmp("figurewrap").show();
-                                    var xname = dataset.xtype.name + " (" + dataset.xtype.unit + ")";
-                                    var yname = paramsStore.getAt(row).get("ytype.name") + " (" + paramsStore.getAt(row).get("ytype.unit") + ")";
-                                    plotinto("#figure", "#figureoverview", "#figurexlabel", id, xname, paramsStore.getAt(row).get("id"), yname); 
-                                }
-                            }
-                            
-                        }),
-
+                        
                         new Ext.grid.GridPanel({
                             layout: 'fit',
                             columns: [
@@ -325,141 +387,8 @@ var showDataset = function(id){
                         
                     ]
                 });
-                    
-                    
-    
-                app.main.add(wrap); 
-                app.main.doLayout();
-                
-                Downloadify.create('downloadify',{
-					filename: function(){
-						return id + ".csv";
-					},
-					data: function(){
-                        var val;
-                        $.jsonRPC.request('dataset.get_raw', {
-                            params: [id, null, null, null],
-                            async: false,
-                            success: function(res){
-                                val = res;
-                            }
-                        });
 
 
-                        var outstr = "";
-                        outstr += dataset.xtype.name;
-                        outstr += ",";
-
-                        for(var i = 0; i < dataset.params.length; i++)
-                        {
-                            outstr += dataset.params[i].ytype.name;
-                            if(i != dataset.params.length - 1) outstr += ",";
-
-                        }
-
-                        outstr += "\n";
-                        
-                        
-                        for(var i = 0; i < val[0].length; i++){
-                            for(var j = 0; j < val.length; j++){
-                               outstr += val[j][i] != null ? val[j][i] : "NaN"
-                               if(j != val.length - 1) outstr += ",";
-                            }
-                            outstr += "\n";
-                        }
-						return outstr;
-					},
-					swf: 'lib/downloadify/downloadify.swf',
-					downloadImage: 'lib/downloadify/download.png',
-					width: 16,
-					height: 16,
-					transparent: true,
-					append: false
-				});            
-                
-            }
-    });  
-}
 
 
-var showType = function(id){
-    
-     setHistory("showType", id);
-    
-     $.jsonRPC.request('type.get_extended', {
-            params: [id], 
-            success: function(type) {
-            
-                app.main.prepare();
-                app.main.setTitle("Show Type");
-                
-                var dsStore = jsonstore(type.datasets, ['xtype.name', 'params*.ytype.name', 'id', 'description']);
-                var coreStore = jsonstore(type.cores, ['name', 'description', 'id']);
- 
-                var wrap = new Ext.Panel({
-
-                    layout: 'fit',
-                    border: false,
-                    items: [
-                                easy_pg('Type', type, 
-				       ["ID", 
-					"Name", 
-					"Unit", 
-					"Species", 
-					"Classification", 
-					"Description"], 
-				'layoutpad'),
-                        
-                        
-                        new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Name', width: 250, dataIndex: 'name'},
-                                { header : 'Description', dataIndex: 'description', id: 'description-column'},
-                            ],
-                            store: coreStore,
-                            cls: 'layoutpad',
-                            title: 'Cores',
-                            autoHeight: true,
-                            stripeRows: true,
-                            autoExpandColumn: 'description-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showCore(coreStore.getAt(row).get("id")); }
-                            }
-		        }),
-
-                       	new Ext.grid.GridPanel({
-                            layout: 'fit',
-                            columns: [
-                                { header : 'ID', width: 250, dataIndex: 'id'},
-                                { header : 'Description', width: 250, dataIndex: 'description'},
-                                { header : 'Measurement Type', width: 250, dataIndex: 'xtype.name'},
-                                { header : 'Parameter Types', dataIndex: 'params.ytype.name', id: 'description-column'},
-                            ],
-                            store: dsStore,
-                            cls: 'layoutpad',
-                            title: 'Datasets',
-                            autoHeight: true,
-                            stripeRows: true,
-                            autoExpandColumn: 'description-column',
-                            viewConfig: {scrollOffset: 0},
-                            listeners: {
-                                celldblclick: function(grid, row, col, e){ showDataset(dsStore.getAt(row).get("id")); }
-                            }
-                            
-                        }),
-
-
-                    ]
-                });
-                                
-    
-                app.main.add(wrap); 
-                app.main.doLayout();
-                
-            }
-    });  
-}
 */

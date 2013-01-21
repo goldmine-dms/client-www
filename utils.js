@@ -81,3 +81,18 @@ var resolveobj = function(str, obj){
 function capitalize(string) {
 	return string.substr(0,1).toUpperCase() + string.substr(1);
 }
+
+
+var downloadURL = function downloadURL(url)
+{
+    var iframe;
+    iframe = document.getElementById("hiddenDownloader");
+    if (iframe === null)
+    {
+        iframe = document.createElement('iframe');  
+        iframe.id = "hiddenDownloader";
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+    iframe.src = url;   
+}

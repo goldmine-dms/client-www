@@ -13,24 +13,31 @@ var toolbar = new Ext.Toolbar({
         {
             text: 'My Data',
             id: 'mydatamenu',
+            icon: 'icons/folder_user.png',
             menu: [
-                {text: "Studies", handler: broadcast("menu.mydata.studies")},
-                {text: "Favorites", handler: broadcast("menu.mydata.favorites")},
-                {text: "Recent", handler: broadcast("menu.mydata.recent")},
-                {text: "Import", handler: broadcast("menu.mydata.importer")}
+                {text: "Study", handler: broadcast("menu.mydata.study")},
+                {text: "Favorite", handler: broadcast("menu.mydata.favorites")},
+                {text: "Import", handler: broadcast("menu.mydata.importer")},
+                {text: "Temporary file", handler: broadcast("menu.mydata.tempfile")}
             ]
         }, 
         {
             text: 'Browse',
             id: 'browsemenu',
+            icon: 'icons/folder_explore.png',
             menu: [        
-                {text: "Map", menu: [
+                {
+                    text: "Map", 
+                    icon: "icons/map.png",
+                    menu: [
                     {text: "Project", handler: broadcast("menu.browse.map.project")},
                     {text: "Activity", handler: broadcast("menu.browse.map.activity")}
                 ]},
                 '-',
                 {text: "Project", handler: broadcast("menu.browse.project")},
                 {text: "Activity", handler: broadcast("menu.browse.activity")},
+                {text: "Study", handler: broadcast("menu.browse.study")},
+                '-',
                 {text: "Datatype", handler: broadcast("menu.browse.datatype")}
 
             ]
@@ -38,24 +45,32 @@ var toolbar = new Ext.Toolbar({
         {
             text: 'Administration',
             id: 'adminmenu',
+            icon: 'icons/cog.png',
             menu: [             
-                {text: "Dataset Curation", handler: broadcast("menu.admin.curate")}
+                {
+                    text: "Dataset Curation", 
+                    handler: broadcast("menu.admin.curate")
+                },
+                "-",
+                {
+                    text: "Restart Server", 
+                    icon: "icons/arrow_rotate_clockwise.png",
+                    handler: broadcast("menu.admin.restart")
+                },
             ]
         }, 
         '->',
         {
-            xtype: 'textfield',
-            name: 'searchfield',
-            id: 'searchfield',
-            emptyText: 'Enter search term'
+            text: 'API Docs',
+            icon: 'icons/book.png'
         },
-        '-', 
+        '-',
         {
             text: 'Not logged in',
             id: 'usermenu',
+            icon: 'icons/user.png',
             menu: []
-        }, 
-        
+        }        
     ]      
 });
 
@@ -101,7 +116,7 @@ $(function() {
 
     app.main = main;
     app.left = left;
-        
+
     app.hide = function(){
         app.left.collapse(false);
         app.left.removeAll();

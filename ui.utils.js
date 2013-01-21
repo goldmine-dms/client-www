@@ -1,51 +1,5 @@
+/// UTIL
 
-// Easy property grid
-var easy_pg = function(title, obj, limit){
-    var p = new Ext.grid.PropertyGrid({
-        title: title,
-        columnWidth: 1,
-        cls: 'layoutpad',
-        autoHeight: true,
-        autoWidth: true,
-        hideHeaders: true,
-        listeners: { 'beforeedit': function (e) { return false; } },
-        viewConfig: {scrollOffset: 0, autoFill: true, forceFit: true},
-    })
-    
-    delete p.getStore().sortInfo; // Remove default sorting
-    p.getColumnModel().getColumnById('name').sortable = false; // set sorting of first column to false
-    p.setSource(limit_dict(obj, limit)); // Now load data
-    return p;
-}
-
-// Easy grid panel
-var easy_gp = function(title, store, columns, callback){
-
-    return new Ext.grid.GridPanel({
-                    title: title,
-                    cm: new Ext.grid.ColumnModel({
-                        defaults: {
-                            sortable: true,
-                            fixed: true
-                        },
-                        columns: columns
-                    }),                   
-                    store: store, 
-                    cls: 'layoutpad',
-                    layout: 'fit', 
-                    autoHeight: true, 
-                    stripeRows: true, 
-                    viewConfig: {
-                        scrollOffset: 0, 
-                        forceFit:true
-                    },
-                    listeners: { 
-                        cellclick: function(grid, row, col, e)
-                            { callback(store.getAt(row).get("id")); }
-                        }
-                    }
-    );
-}
 
 var setHistory = function(fn, val){   
     app.settinghistory = true;
@@ -98,81 +52,10 @@ var jsonstore = function(dataset, fieldlist) {
     return store;
 }
 
-requestingplotinfo = false;
 
-var plotinto = function(fid, oid, xid, ds, dsname, param, paramname, xmin, xmax, overviewplot){
 
-    var numbins = 750;
-     
-    if(requestingplotinfo !== true){
-        requestingplotinfo = true;
-    
-        $.jsonRPC.request("dataset.get_derived", {
-        
-            params: [ds, {"numbins": numbins, "limits": [xmin, xmax], "params": [param]}],  
-            success: function(result) {
-                  
-                var datao = [];
 
-                for (var i=0; i<result[0].length; i++) {
-                    datao[i] = [result[0][i], result[1][i]];
-                }
-                                         
-                
-                if(result[0].length < numbins){
-                    var data = [{ data: datao, points: {show: true}, lines: {show: true}, label: paramname}];   
-                }
-                else{
-                    var data = [{ data: datao, label: paramname}];   
-                }
-                
-                var options = {
-                    selection: { mode: "x" },
-                };
-
-                var figure = $(fid);
-                var overview = $(oid);
-                figure.unbind("plotselected");
-                figure.bind("plotselected", function (event, ranges) {
-                                          
-                       figureplot = $.plot(figure, data,
-                              $.extend(true, {}, options, {
-                                  xaxis: { min: ranges.xaxis.from, max: ranges.xaxis.to }
-                              }));
-
-                        plotinto(fid, oid, xid, ds, dsname, param, paramname, ranges.xaxis.from, ranges.xaxis.to, overviewplot);
-                        overviewplot.setSelection(ranges, true);
-                });  
-                          
-                var figureplot = $.plot(figure, data, options);
-               
-                if(typeof overviewplot == "undefined"){
-
-                    overviewplot = $.plot(overview, [{ data: datao }], {
-                        series: {
-                            lines: { show: true, lineWidth: 1 },
-                            shadowSize: 0
-                        },
-                        xaxis: { ticks: []},
-                        yaxis: { ticks: [], autoscaleMargin: 0.1 },
-                        selection: { mode: "x" }
-                    });
-                    
-                    overview.bind("plotselected", function (event, ranges) {
-                        figureplot.setSelection(ranges);
-                    });
-                    
-                    
-                    $(xid).text(dsname);
-                                        
-                }
-                
-                requestingplotinfo = false;
-            }
-            
-        });
-    } 
-}
+// FIXME add doc, make fn more general
 
 var lineageinto = function(id, obj, wrap){
    
@@ -246,7 +129,7 @@ var lineageinto = function(id, obj, wrap){
                         bg.attr("stroke-width", 0);
                         bg.attr("fill", "#039");
                         $(text.node).click(el, function (e) {
-                            showDataset(e.data);
+                            views.show.dataset(e.data);
                         });
 
                         var edgelist = depmap[el];

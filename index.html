@@ -13,7 +13,7 @@
 
         <script language="javascript">
         var load = function(msg, pct){
-            document.getElementById("loading-txt").innerHTML = 'Loading ' + msg;
+            document.getElementById("loading-txt").innerHTML = msg;
             document.getElementById("loading-bar").style.width = (pct * 2) + "px"; 
         };
         </script> 
@@ -56,22 +56,20 @@
         <script src="lib/jquery.cookie.js"></script>
         <script src="lib/jquery.jsonrpc.js"></script>        
  
-        <script>load('Raphaël', 83);</script>
+        <script>load('Raphael', 83);</script>
         <script src="lib/raphael.js"></script>
         
-        <script>load('Downloadify', 85);</script>
-        <script src="lib/downloadify.js"></script>
-        <script src="lib/downloadify/swfobject.js"></script>
-		<script src="lib/downloadify/downloadify.min.js"></script>
-		
         <!-- Goldmine code -->
         <script>load('Goldmine',86);</script>
         <script src="utils.js"></script>
-        <script src="ui.js"></script>
         <script src="ui.utils.js"></script>
+        <script src="ui.widgets.js"></script>
+        <script src="ui.widgets.dataset.js"></script>
+        <script src="ui.js"></script>
+        <script src="user.js"></script>
+        <script src="admin.js"></script>
         <script src="ui.views.master.js"></script>
         <script src="ui.views.js"></script>
-        <script src="ui.user.js"></script>
         <script src="run.js"></script>
         
         <!-- Fields required for history management -->

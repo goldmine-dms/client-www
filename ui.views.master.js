@@ -14,9 +14,12 @@ views.browse.master = function(name, rpcfunction, titlefield, callback, rpcparam
     $.jsonRPC.request(rpcfunction, {
             params: rpcparam, 
             success: function(list) {
+
+                var nicename = name.replace("_", " ");
+
             
                 app.main.prepare();
-                app.main.setTitle("Browse " + capitalize(name) + "s");
+                app.main.setTitle("");
     
                 var store = new Ext.data.ArrayStore({fields: ["name", "data"]});
                 
@@ -40,7 +43,7 @@ views.browse.master = function(name, rpcfunction, titlefield, callback, rpcparam
                 var lv = new Ext.list.ListView({
                     emptyText: 'No ' + name + 's matching query', 
                     columns: [{
-                        header: capitalize(name), 
+                        header: capitalize(nicename), 
                         dataIndex: titlefield
                     }], 
                     store: store,
@@ -67,7 +70,7 @@ views.map.master = function(name, rpcfunction, titlefield, callback, rpcparam){
             success: function(list) {
   
                 app.main.prepare();
-                app.main.setTitle("Map " + capitalize(name) + "s");
+                app.main.setTitle("Map: " + capitalize(name));
   
                 var data = [];                  
                 for(var i = 0; i < list.length; i++){
@@ -99,7 +102,7 @@ views.map.master = function(name, rpcfunction, titlefield, callback, rpcparam){
 }
 
 
-views.show.master = function(id, name, rpcfunction, title, header, description, contentcallback){
+views.show.master = function(id, name, rpcfunction, title, header, description, contentcallback, tbar){
     
      setHistory("views.show." + name, id);
     
@@ -108,20 +111,26 @@ views.show.master = function(id, name, rpcfunction, title, header, description, 
             success: function(obj) {
             
                 app.main.prepare();
-                app.main.setTitle(obj[title]);
+                app.main.setTitle(capitalize(name) + ": " + obj[title]);
                 
+                if(typeof tbar === "function"){
+                    tbar = tbar(obj);
+                }
+
                 var wrap = new Ext.Panel({
 
                     layout: 'fit',
+                    tbar: tbar,
                     border: false,
                     items: [
                         {   
                             border: false,
                             layout: 'column',
                             autoHeight: true,
+                            id: 'pg_header',
                             items: [
                             
-                                easy_pg(capitalize(name), obj, header),
+                                widgets.easy_pg("Properties", obj, header),
                             
                                 {
                                     title: 'Map', 
@@ -155,9 +164,9 @@ views.show.master = function(id, name, rpcfunction, title, header, description, 
                             layout: 'fit',
                             colspan: 2,
                             cls: 'layoutpad txt',
-                            html: obj[description],
-                            hidden: obj[description] == null,
-                            title: capitalize(description)
+                            html: description ? obj[description] : null,
+                            hidden: description ? obj[description] == null : true,
+                            title: description ? capitalize(description) : null
                         }
                     ]
                 });
@@ -176,7 +185,7 @@ views.show.master = function(id, name, rpcfunction, title, header, description, 
     });  
 }
 
-views.show.addmarkers = function(o, c, cb){
+views.show.master.addmarkers = function(o, c, cb){
     
     var map = Ext.getCmp("overviewmap");
     
@@ -223,3 +232,11 @@ views.show.addmarkers = function(o, c, cb){
     map.addListener('mapready', fn.createDelegate(map, [o, c, cb]));
 
 }
+
+views.show.master.addproperties = function(obj){
+    var header = Ext.getCmp("pg_header");    
+    obj.columnWidth = 0.4;
+    header.items.items[0].columnWidth = 0.6;
+    header.add(obj);
+}
+
