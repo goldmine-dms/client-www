@@ -50,7 +50,13 @@ views.browse.master = function(name, rpcfunction, titlefield, callback, rpcparam
                 });
                 
                 lv.on('click', function(sthis, nodeid){
-                    callback(store.getAt(nodeid).get("data")["id"]);
+                    var param = store.getAt(nodeid).get("data");
+                    if(param["id"]){
+                        callback(param["id"]); 
+                    }else{
+                        callback(param);
+                    }
+                    
                 });
                 app.left.add(lv);
             }

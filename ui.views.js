@@ -12,7 +12,11 @@ views.browse.study = function(){
 }
 
 views.browse.my_study = function(){
-    views.browse.master("my_study", "study.all", "name", views.show.study, [false, true]);
+    views.browse.master("my_study", "study.all", "name", views.show.study, [true]);
+}
+
+views.browse.favorite = function(){
+    views.browse.master("favorite", "favorite.all", "name", views.show.favorite);
 }
 
 views.browse.datatype = function(){
@@ -50,7 +54,12 @@ views.show.project = function(id){
         views.show.master.addmarkers(obj.activities, "42C0FB", views.show.activity);
         return d;
         
+    }, function(obj){
+        var favorite = widgets.favorite(obj.id,  "project");
+        return ["->", favorite];
     });
+
+
 
 }
 
@@ -79,7 +88,9 @@ views.show.activity = function(id){
             }               
         });
 
-        return [backProject];
+        var favorite = widgets.favorite(obj.id,  "activity");
+
+        return [backProject, "->", favorite];
     }
 
     );
@@ -138,15 +149,27 @@ views.show.study = function(id){
             menu: activityMenu              
         });
 
-        return [backActivity];
+        var favorite = widgets.favorite(obj.id,  "study");
+
+        return [backActivity, "->", favorite];
     }
     );
 }
 
 views.show.datatype = function(id){
     var header = ["ID", "Name", "Unit"];
-    views.show.master(id, "datatype", "dataset.type.get", "name", header, "description");
+    views.show.master(id, "datatype", "dataset.type.get", "name", header, "description", undefined, function(obj){
+        var favorite = widgets.favorite(obj.id,  "datatype");
+        return ["->", favorite];
+    });
 }
+
+views.show.favorite = function(obj){
+    var id = obj.ref_id;
+    var type = obj.ref_type;
+    views.show[type](id);
+}
+
 
 views.show.dataset = function(id){
     
@@ -167,14 +190,7 @@ views.show.dataset = function(id){
             }               
         });
 
-        var favorite = new Ext.Action({
-            icon: 'icons/heart_gray.png',
-            handler: function(){
-                console.log("dataset.favorite", obj.id);
-                console.log(favorite);
-                favorite.items[0].setIcon('icons/heart.png');
-            }               
-        });
+        var favorite = widgets.favorite(obj.id,  "dataset");
 
         return [backStudy, '->', favorite];
     });

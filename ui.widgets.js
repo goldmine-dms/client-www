@@ -66,3 +66,72 @@ widgets.lineage = function(study_id){
 
 
 
+widgets.favorite = function(id, type){
+
+    var action = new Ext.Action({
+            icon: 'icons/heart_gray.png',
+            handler: function(){}
+    });
+
+
+
+    var fetch = function(){
+        $.jsonRPC.request("favorite.get_by_reference", {
+            params: [id, type],
+            async: false,
+            success: function(obj){
+                setState(obj);
+            }
+        });
+    };
+
+    var add = function(name){
+        $.jsonRPC.request("favorite.add", {
+            params: [name, id, type],
+            async: false,
+            success: function(obj){
+                setState(obj);
+            }
+        });
+    };
+
+    var remove = function(name){
+        $.jsonRPC.request("favorite.remove", {
+            params: [name],
+            async: false,
+            success: function(obj){
+                setState(null);    
+            }
+        });
+    };
+
+    var setState = function(obj){
+        if(obj){
+            action.items[0].setIcon('icons/heart.png');
+            action.setText("#" + obj.name)
+            action.setHandler(function(){
+                Ext.MessageBox.confirm("Un-favorite", "Are you sure you want to remove favorite #" + obj.name + "?", function(btn){
+                    if(btn == "ok") remove(obj.name);
+                });
+            });
+            
+        }else{
+            action.items[0].setIcon('icons/heart_gray.png');
+            action.setText("");
+            action.setHandler(function(){
+                Ext.MessageBox.prompt('Favorite', 'Enter short handle:', function(btn, text){
+                    if(btn == "ok"){
+                        add(text);
+                    }
+                });                
+            });        
+        }
+    }
+    
+    setTimeout(fetch, 10);
+
+
+    
+
+    return action;
+}

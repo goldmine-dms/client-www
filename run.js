@@ -17,6 +17,7 @@ listen("menu.browse.datatype",      views.browse.datatype);
 
 listen("menu.mydata.study",         views.browse.my_study);
 listen("menu.mydata.tempfile",      views.browse.tempfile);
+listen("menu.mydata.favorites",     views.browse.favorite);
 
 listen("menu.admin.restart",        admin.restart);
 
