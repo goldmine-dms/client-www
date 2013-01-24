@@ -88,19 +88,7 @@ user.authenticate = function() {
             var usermenu = new Ext.menu.Menu({});
             usermenu.add({text:"<b>" + user.current.fullname + "</b>", disabled: true});
             usermenu.add({text:user.current.email, disabled: true});
-
- 
-
-            $.jsonRPC.request('info', {
-                params: [],
-                async: false,
-                success: function(result) {   
-                    usermenu.add({text:'Server name: ' + result.server.name, disabled: true});
-                    usermenu.add({text:'Organisation: ' + result.server.organisation, disabled: true});
-                    usermenu.add({text:'API version: ' + result.version.api, disabled: true});
-            }});
-
-            
+           
             usermenu.add("-");
             usermenu.add({text:"Settings", handler: broadcast("menu.user.settings")});
             usermenu.add({text:"Logout", handler: broadcast("menu.user.logout")});

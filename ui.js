@@ -17,7 +17,7 @@ var toolbar = new Ext.Toolbar({
             menu: [
                 {text: "Study", handler: broadcast("menu.mydata.study")},
                 {text: "Favorite", handler: broadcast("menu.mydata.favorites")},
-                {text: "Import", handler: broadcast("menu.mydata.importer")},
+                /*{text: "Import", handler: broadcast("menu.mydata.importer")},*/
                 {text: "Temporary file", handler: broadcast("menu.mydata.tempfile")}
             ]
         }, 
@@ -42,7 +42,7 @@ var toolbar = new Ext.Toolbar({
 
             ]
         }, 
-        {
+        /*{
             text: 'Administration',
             id: 'adminmenu',
             icon: 'icons/cog.png',
@@ -58,11 +58,28 @@ var toolbar = new Ext.Toolbar({
                     handler: broadcast("menu.admin.restart")
                 },
             ]
-        }, 
+        }, */
         '->',
         {
+            text: 'Help',
+            icon: 'icons/help.png',
+            handler: function(){
+                window.open('help/index.html');
+            }
+        },
+        '-',
+        {
+            text: 'Report a bug',
+            icon: 'icons/bug.png',
+            handler: function(){
+                window.open('https://podio.com/webforms/1386398/240029');
+            }
+        },
+        '-',
+        {
             text: 'API Docs',
-            icon: 'icons/book.png'
+            icon: 'icons/book.png',
+            handler: broadcast("menu.apidocs")
         },
         '-',
         {
@@ -82,6 +99,7 @@ $(function() {
     
     var main = new Ext.Panel({region: 'center', title: '&nbsp;', autoScroll: true});
     
+
     var left  = new Ext.Panel({
                     region: 'west', 
                     width: 200, 
@@ -108,14 +126,32 @@ $(function() {
     main.prepare = function() {
         app.main.removeAll();  
     };
+
+    var statustext = new Ext.Action({
+        text: "",
+        handleMouseEvents: false,
+    })
+
+    var connectionstatus = new Ext.Action({
+        icon: 'icons/hourglass.png',
+        handleMouseEvents: false,
+        tooltip: 'Connection status'
+    })
+
+    var statusbar = new Ext.Toolbar({
+        region: 'south',
+        height: 28,
+        items: [statustext, "->", connectionstatus]
+    });
               
-    app =  new Ext.Viewport({
+    app = new Ext.Viewport({
         layout: 'border',
-        items: [toolbar, main, left]
+        items: [toolbar, main, left, statusbar]
     });
 
     app.main = main;
     app.left = left;
+    app.statusbar = statusbar;
 
     app.hide = function(){
         app.left.collapse(false);
@@ -132,6 +168,50 @@ $(function() {
         app.left.hide();
         app.doLayout();
     }
+
+    app.statusbar.wait = function(){
+        $("body").addClass('wait')
+        connectionstatus.items[0].setIcon('icons/loading.gif');
+        connectionstatus.items[0].setTooltip("Working");
+        connectionstatus.working = true;
+        setTimeout("app.statusbar.wait_alert()", 1000);
+    }
+
+    app.statusbar.wait_alert = function(){
+        if(connectionstatus.working == true){
+            connectionstatus.waitdialog = true;
+            Ext.MessageBox.show({
+                title: 'Please wait',
+                msg: 'You command is being processed',
+                wait:true,
+                waitConfig: {interval:100}
+            });
+        }
+    }
+
+    app.statusbar.done = function(){
+        $("body").removeClass('wait')
+        connectionstatus.items[0].setIcon('icons/accept.png');
+        connectionstatus.items[0].setTooltip("Last command executed successfully")
+        connectionstatus.working = false;
+        if(connectionstatus.waitdialog){
+            Ext.MessageBox.hide();
+            connectionstatus.waitdialog = false;
+        }
+    }
+
+    app.statusbar.error = function(){
+        app.statusbar.done();
+        connectionstatus.items[0].setIcon('icons/error.png');
+        connectionstatus.items[0].setTooltip("Last command failed")
+    }
+
+    app.statusbar.text = function(str){
+        statustext.setText(str);
+    }
+
+
+
     
 });
 

@@ -8,6 +8,8 @@ a login window or the main user interface.
 
 listen("menu.user.logout",          user.login);
 
+listen("menu.apidocs",              views.doc.browse);
+
 listen("menu.browse.project",       views.browse.project);
 listen("menu.browse.activity",      views.browse.activity);
 listen("menu.browse.study",         views.browse.study);
@@ -44,6 +46,13 @@ $(function() {
     if(token && $.cookie("auth") !== null){
         changeHistory(token);
     }
+
+    $.jsonRPC.request('info', {
+        params: [],
+        async: false,
+        success: function(result) {   
+            app.statusbar.text(result.server.organisation + " (" + result.server.name + ")");
+    }});
 
 });
 

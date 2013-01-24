@@ -116,17 +116,10 @@ views.show.study = function(id){
 
         ];
         
-        var activitystore = jsonstore(obj.activities, ['name', 'description', 'id']);
-        var activitycolumns = [
-            { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
-            { header: 'Name', width: 250, dataIndex: 'name'},
-            { header: 'Description', fixed: false, dataIndex: 'description'}
-        ];
-        
         return [
-            widgets.lineage(id),
+            widgets.study.toolbar(obj),
             widgets.easy_gp('Datasets', datasetstore, datasetcolumns, views.show.dataset),
-            widgets.easy_gp('Referenced activities', activitystore, activitycolumns, views.show.activity)
+            widgets.lineage(id),
         ]
     },
     function(obj){

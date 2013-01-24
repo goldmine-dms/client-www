@@ -34,7 +34,7 @@ widgets.easy_gp = function(title, store, columns, callback){
             columns: columns
         }),                   
         store: store, 
-        cls: 'layoutpad x-unselectable',
+        cls: 'layoutpad x-unselectable clickme',
         layout: 'fit', 
         autoHeight: true, 
         stripeRows: true, 

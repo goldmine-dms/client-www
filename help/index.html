@@ -1,0 +1,47 @@
+<html>
+<head>
+    <title>Goldmine Help</title>
+</head>
+<body>
+
+    <em>This is a very limited help for the initial release of the database system, contact <a href="mailto:panton@gfy.ku.dk">panton@gfy.ku.dk</a> if this manual does not solve your problem</em>
+
+
+    <h2>How the data is organized</h2>
+
+    <h3>Dataset</h3>
+
+    <p>As datasets can have different properties, depending on how the data itself is organized, the database can be extended to support these.
+    But for now, only one class of datasets are supported: <em>sequence</em>.</p>
+
+    <p>A sequence is data that fits into a single worksheet in Excel or can be represented as numbers in classic text file.
+    Sequence data typically come in the form of tabular data. 
+    The first column of the sequence is called the index. 
+    For ice core data the index is typically depth, or in CFA the index could be a number of seconds.</p>
+
+
+    <h3>Study</h3>
+
+    <p>Related <em>datasets</em> are organized into <em>studies</em>. 
+    The study is the building block of the database.</p>
+
+    <p>A study can be <em>stand-alone</em> or it can be part of the activity/project hierarchy. 
+    A study can even be part of multiple activties, such as an intercomparison between multiple ice cores.</p>
+
+    <p>The study defines access to data. Only groups which are permitted to can access the study.</p>
+
+
+
+
+    <h3>Activities and Projects</h3>
+
+    <p>The activities and projects are used to browse data. 
+    It is a simple way to reference studies to a specific activity that has taken place.</p>
+
+    <p>Examples of activities: ice coring, measuring aerosols, temperature profiles in firn, weather stations</p>
+
+    <p>The project is a level above the activity, it defines which project the activities were a part of. Examples: NEEM, GRIP, EPICA</p>
+
+
+</body>
+</html>

@@ -19,7 +19,7 @@ widgets.dataset.sequence = function(id){
             var toolbar = new Ext.Panel({
                 layout: 'fit',
                 cls: 'layoutpad',
-                height: 70,
+                height: 40,
                 items: [
                     {xtype: 'toolbar', items: [{xtype: 'tbspacer', width: 5},
                     {
@@ -70,9 +70,12 @@ widgets.dataset.sequence = function(id){
                         text: 'Analysis',
                         icon: 'icons/chart_pie.png',
                         menu: [
-                            {text: 'Compare with other dataset'}
+                            {text: 'Compare with other dataset', disabled: true},
+                            '-'
+
                         ]
                     },
+                    /*
                     {xtype: 'tbspacer', width: 5},
                     {
                         text: 'Metadata',
@@ -81,6 +84,7 @@ widgets.dataset.sequence = function(id){
                             {text: 'Annotate'}
                         ]
                     },
+                    */
                     {xtype: 'tbspacer', width: 5},
                     {
                         text: 'Administration',
@@ -173,20 +177,19 @@ widgets.dataset.sequence.figureplot = null;
 widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
 
     var numbins = 750;
-    
+
     Ext.getCmp("figurewrap").show();
     
     if(widgets.dataset.sequence.isplotting !== true){
         widgets.dataset.sequence.isplotting = true;
         
-        var getfn = ['dataset.sequence.get_data', [dataset.dataset.id, params]];
+        var getfn = ['dataset.sequence.get_data', [
+            dataset.dataset.id, params, xmin, xmax
+        ]];
         
         var rebinfn = ['dataset.sequence.analysis.meanbin', 
-        {
-            original_if_supersample: true,
-            numbins: numbins,
-            mastermax: xmax,
-            mastermin: xmin
+        {   original_if_supersample: true,
+            numbins: numbins
         }];
     
         $.jsonRPC.request("chain", {
@@ -204,22 +207,28 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
                 
                 var data = [];
                 var overviewdata = [];
+                var hooks = [];
 
                 for(var j=0; j<params.length; j++){
                                        
                     var datapoints = [];
                     
-                    var yname = result.current_parameters[j].type.name + " (" + result.current_parameters[j].type.unit + ")";
+                    var yname = result.current_parameters[j].type.name + " (" + result.current_parameters[j].type.unit + ") from " + dataset.dataset.description;
                     
                     for (var i=0; i<result.data.length; i++) {
                         datapoints[i] = [result.data[i][0], result.data[i][1+j]];
                     }
 
-                    if(result.data[0].length < numbins){
-                         data.push({ data: datapoints, points: {show: true}, lines: {show: true}, label: yname});   
+                    if(result.data.length < numbins){
+                        var hotstep = null;
+                        if(dataset.index_marker_type == "span"){
+                            hotstep = dataset.index_marker_location;
+                        }
+
+                        data.push({data: datapoints, points: {show: false}, lines: {show: true}, hotstep: {type:hotstep, discrete: false}, label: yname});   
                     }
                     else{
-                        data.push({ data: datapoints, label: yname});   
+                        data.push({data: datapoints, points: {show: false}, lines: {show: true}, label: yname});   
                     }
                     
                     overviewdata.push({data: datapoints});
@@ -303,8 +312,7 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
             
         });
     } 
-}
-
+}   
 
 widgets.dataset.sequence.plot.redraw = function(){
     (function(){
@@ -328,10 +336,12 @@ widgets.dataset.sequence.download = function(id){
     $.jsonRPC.request("chain", {
     
         params: [getfn, asciifn, tmpfilefn],  
+        async: true,
         success: function(result) {
             filename = result[0];
             // FIXME: hardcoded value for REST'y endpoint
             downloadURL("/rest/tempfile.pull/" + filename);
+            
         }
     });
 }
