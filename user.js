@@ -93,7 +93,6 @@ user.authenticate = function() {
 
                     labelWidth:150,
                     frame:true, 
-                    title:'Change password', 
                     defaultType:'textfield',
 
                     items:[{ 
@@ -136,10 +135,10 @@ user.authenticate = function() {
                 layout:'fit',
                 width:350,
                 height:150,
-                closable: false,
                 resizable: false,
                 plain: true,
                 border: false,
+                title: "Change password",
                 items: [chpass_form]
             });
 

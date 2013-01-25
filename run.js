@@ -22,6 +22,8 @@ listen("menu.mydata.tempfile",      views.browse.tempfile);
 listen("menu.mydata.favorites",     views.browse.favorite);
 
 listen("menu.admin.restart",        admin.restart);
+listen("menu.admin.user.create",    admin.createuser);
+listen("menu.admin.group.browse",    views.group.browse);
 
 $(function() {
                 

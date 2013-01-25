@@ -42,12 +42,47 @@ var toolbar = new Ext.Toolbar({
 
             ]
         }, 
-        /*{
+        {
             text: 'Administration',
             id: 'adminmenu',
             icon: 'icons/cog.png',
-            menu: [             
+            menu: [  
                 {
+                    text: "Users",
+                    icon: "icons/user_suit.png",
+                    menu: [
+                        {
+                            text: "Browse",
+                            icon: "icons/user.png",
+                            disabled: true,
+                            handler: broadcast("menu.admin.user.browse")
+                        },
+                        {
+                            text: "Create User...",
+                            icon: "icons/user_add.png",
+                            handler: broadcast("menu.admin.user.create")
+                        }
+                    ]
+                },    
+                {
+                    text: "Groups",
+                    icon: "icons/group.png",
+                    
+                    menu: [
+                        {
+                            text: "Browse",
+                            icon: "icons/group.png",
+                            handler: broadcast("menu.admin.group.browse")
+                        },
+                        {
+                            text: "Create Group...",
+                            icon: "icons/group_add.png",
+                            disabled: true,
+                            handler: broadcast("menu.admin.group.create")
+                        }
+                    ]
+                },        
+                /*{
                     text: "Dataset Curation", 
                     handler: broadcast("menu.admin.curate")
                 },
@@ -56,9 +91,9 @@ var toolbar = new Ext.Toolbar({
                     text: "Restart Server", 
                     icon: "icons/arrow_rotate_clockwise.png",
                     handler: broadcast("menu.admin.restart")
-                },
+                },*/
             ]
-        }, */
+        }, 
         '->',
         {
             text: 'Help',
