@@ -7,6 +7,7 @@ a login window or the main user interface.
 /* Bind menu clicks to functions */
 
 listen("menu.user.logout",          user.login);
+listen("menu.user.changepassword",  widgets.user.changepassword);
 
 listen("menu.apidocs",              views.doc.browse);
 
@@ -23,7 +24,8 @@ listen("menu.mydata.favorites",     views.browse.favorite);
 
 listen("menu.admin.restart",        admin.restart);
 listen("menu.admin.user.create",    admin.createuser);
-listen("menu.admin.group.browse",    views.group.browse);
+listen("menu.admin.group.browse",   views.group.browse);
+
 
 $(function() {
                 

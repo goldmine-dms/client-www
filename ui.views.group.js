@@ -63,7 +63,6 @@ views.group.browse = function(){
     });       
 }
 
-
 views.group.show = function(id){
     
      setHistory("views.group.show", id);
@@ -84,7 +83,7 @@ views.group.show = function(id){
                 ];
                 
                 var wrap = [widgets.easy_gp('Users', store, columns, function(){
-                    alert("Not implented");
+                    alert("Not implemented");
                 })];
 
                 app.main.add(wrap);                
@@ -93,3 +92,5 @@ views.group.show = function(id){
             }
     });  
 }
+
+

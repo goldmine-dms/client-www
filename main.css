@@ -23,6 +23,11 @@ body.x-body-masked .x-window-plain .x-window-mc {
        
 }
 
+.whitewin .x-window-body {
+    background-color: #fff ;
+}
+
+
 
 /* Selectable grids */
 .x-grid3-row td,

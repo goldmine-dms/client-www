@@ -88,64 +88,6 @@ user.authenticate = function() {
  
             toolbar.items.get("usermenu").setText(user.current.username);
             
-
-                var chpass_form = new Ext.FormPanel({ 
-
-                    labelWidth:150,
-                    frame:true, 
-                    defaultType:'textfield',
-
-                    items:[{ 
-                        fieldLabel:'New password', 
-                        name:'password', 
-                        inputType:'password', 
-                    },{ 
-                        fieldLabel:'Repeat password', 
-                        name:'password2', 
-                        inputType:'password', 
-                    }],
-             
-                    buttons:[{ 
-                        text:'Change',
-                        formBind: true,  
-                        handler: function(){
-                            var form = chpass_form.getForm();
-                            if(form.findField('password').getValue() == form.findField('password2').getValue()
-                                && form.findField('password').getValue() != ""){
-                                $.jsonRPC.request('user.change_password', {
-
-                                    params: [form.findField('password').getValue()], 
-                                    success: function() {
-                                        Ext.Msg.alert('Success', "The password was changed"); 
-                                        chpass.close();
-                                    }
-                                });    
-                            }else{
-                                Ext.Msg.alert('Error', "The passwords does not match and cannot be empty"); 
-                            }
-
-                        }    
-                    }],
-                    
-                    
-                })
-
-
-            var chpass = new Ext.Window({
-                layout:'fit',
-                width:350,
-                height:150,
-                resizable: false,
-                plain: true,
-                border: false,
-                title: "Change password",
-                items: [chpass_form]
-            });
-
-
-
-
-
             var usermenu = new Ext.menu.Menu({});
             usermenu.add({text:"<b>" + user.current.fullname + "</b>", disabled: true});
             usermenu.add({text:user.current.email, disabled: true});
@@ -153,9 +95,7 @@ user.authenticate = function() {
             usermenu.add("-");
 
             usermenu.add({text:"Settings", handler: broadcast("menu.user.settings")});
-                        usermenu.add({text:"Change Password...", handler: function(){
-                chpass.show();
-            }});
+            usermenu.add({text:"Change Password...", handler: broadcast("menu.user.changepassword")});
             usermenu.add("-");
             usermenu.add({text:"Logout", handler: broadcast("menu.user.logout")});
 
