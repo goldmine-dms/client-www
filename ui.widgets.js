@@ -23,7 +23,10 @@ widgets.easy_pg = function(title, obj, limit){
     return p;
 }
 
-widgets.easy_gp = function(title, store, columns, callback){
+widgets.easy_gp = function(title, store, columns, callback, idcol){
+
+    if (typeof idcol === "undefined") idcol = "id";
+
     return new Ext.grid.GridPanel({
         title: "<img src='icons/arrow_right.png' style='vertical-align: middle'/> " + title,
         cm: new Ext.grid.ColumnModel({
@@ -44,7 +47,7 @@ widgets.easy_gp = function(title, store, columns, callback){
         },
         listeners: { 
             cellclick: function(grid, row, col, e)
-                { callback(store.getAt(row).get("id")); }
+                { callback(store.getAt(row).get(idcol)); }
             }
         }
     );
@@ -111,7 +114,9 @@ widgets.favorite = function(id, type){
             action.setText("#" + obj.name)
             action.setHandler(function(){
                 Ext.MessageBox.confirm("Un-favorite", "Are you sure you want to remove favorite #" + obj.name + "?", function(btn){
-                    if(btn == "ok") remove(obj.name);
+                    if(btn == "ok"){
+                       remove(obj.name); 
+                    } 
                 });
             });
             

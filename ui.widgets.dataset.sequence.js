@@ -155,10 +155,9 @@ widgets.dataset.sequence = function(id){
                 { header: 'Metadata', fixed: false, dataIndex: 'metadata'}
             ];
         
-            var parameters = widgets.easy_gp('Parameters', parameterstore, parametercolumns, function(id){
-                console.log(id);
-                widgets.dataset.sequence.plot(obj, [id]);
-            });    
+            var parameters = widgets.easy_gp('Parameters', parameterstore, parametercolumns, function(index){
+                widgets.dataset.sequence.plot(obj, [index]);
+            }, "index");    
             
             wrap.push(parameters);
             
