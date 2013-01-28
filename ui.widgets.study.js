@@ -75,37 +75,40 @@ widgets.study.toolbar = function(obj){
 }
 
 
+widgets.study.well = function(name){
+    console.log(name);
+}
 
 
 widgets.study.choose = function(callback){
 
     $.jsonRPC.request("study.all", {
-        
-        params: [current_study], 
+        params: [], 
         success: function(obj) {
 
-            console.log(obj);
+
+            for(var j=0; j<obj.length; j++){
+
+                obj[j].activity = [];
+
+                for(var i=0; i<obj[j].activities.length; i++){
+                    obj[j].activity.push(obj[j].activities[i].name);
+                }
+
+                obj[j].activity = obj[j].activity.join(", ");
+            }
 
 
-            var store = jsonstore(obj.datasets, ['description', 'type', 'created', 'closed', 'curation_status', 'id']);
-
+            var store = jsonstore(obj, ['description', 'activity','name', 'id']);
             var columns = [
             
                 { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
-                { header: '', width: 24, dataIndex: 'closed', renderer: function(o){
-                    if(o) return "<img src='icons/lock.png' title='Closed'/>";
-                    else return "<img src='icons/pencil.png' title='Open'/>";
-                }},
-                { header: 'Type', width: 100, dataIndex: 'type'},
-                { header: 'Created', width: 175, dataIndex: 'created'},
-                { header: 'Curation', width: 75, dataIndex: 'curation_status'},
-                { header: 'Description', fixed: false, dataIndex: 'description'}
+                { header: 'Name', width: 175, dataIndex: 'name'},
+                { header: 'Description', width: 175, dataIndex: 'description'},
+                { header: 'Referenced activities', fixed: false, dataIndex: 'activity'}
             ];
 
-            if(limit_type){
-                store.filter("type", limit_type, true, false);
-            }
-            
+           
             var search = new Ext.Panel({
                 cls: 'layoutpad',
                 layout: 'fit',
@@ -117,14 +120,7 @@ widgets.study.choose = function(callback){
                         enableKeyEvents: true,
                         listeners: {
                             keyup: function(field){
-                                if(limit_type){
-                                    store.filter([
-                                        {property: "type", value: limit_type},
-                                        {property: "description", value: field.getValue(), anyMatch: true, caseSensitive: false}
-                                    ]);
-                                }else{
-                                    store.filter("description", field.getValue(), true, false);
-                                }
+                                store.filter("description", field.getValue(), true, false);
                             }
                         },
 
@@ -153,7 +149,7 @@ widgets.study.choose = function(callback){
                 listeners: { 
                     celldblclick: function(grid, row, col, e){ 
                         win.close();
-                        callback(store.getAt(row).get("id"), widgets.dataset.well(store.getAt(row).get("description")));
+                        callback(store.getAt(row).get("id"), widgets.study.well(store.getAt(row).get("name")));
                     }
                 }
                 
@@ -167,7 +163,7 @@ widgets.study.choose = function(callback){
                 border: false,
                 autoScroll: true,
                 cls: "whitewin",
-                title: "Choose dataset",
+                title: "Choose study",
                 items: [search, lv]
             });
 

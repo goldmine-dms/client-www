@@ -11,6 +11,10 @@ widgets.dataset.choose = function(callback, current_study, limit_type){
     if(typeof current_study === "undefined"){
         // call with widgets.study.choose
 
+        widgets.study.choose(function(id){
+            widgets.dataset.choose(callback, id, limit_type);
+        });
+
         return;
     }
 

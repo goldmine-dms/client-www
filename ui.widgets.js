@@ -114,7 +114,7 @@ widgets.favorite = function(id, type){
             action.setText("#" + obj.name)
             action.setHandler(function(){
                 Ext.MessageBox.confirm("Un-favorite", "Are you sure you want to remove favorite #" + obj.name + "?", function(btn){
-                    if(btn == "ok"){
+                    if(btn == "yes"){
                        remove(obj.name); 
                     } 
                 });

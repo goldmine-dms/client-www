@@ -65,10 +65,10 @@ widgets.dataset.sequence = function(id){
                     {
                         text: 'Analysis',
                         icon: 'icons/chart_pie.png',
+                        id:   'sequence.analysis',
                         menu: [
                             {text: 'Compare with other dataset', disabled: true},
                             '-'
-
                         ]
                     },
                     /*
@@ -126,6 +126,29 @@ widgets.dataset.sequence = function(id){
                     ]}
                 ]
             });
+
+            for(var p in plugin.dataset.sequence.analysis){
+                var menu = [];
+
+                for(var i = 0; i < plugin.dataset.sequence.analysis[p].actions.length; i++){
+                    var action = plugin.dataset.sequence.analysis[p].actions[i];
+                    menu.push({
+                        text: action.name,
+                        handler: function(){
+                            action.action(id);
+                        }
+                    });
+                }
+
+                Ext.getCmp("sequence.analysis").menu.add(
+                    {
+                        text: plugin.dataset.sequence.analysis[p].name,
+                        menu: menu
+                    }
+                );
+                
+            }
+
 
             wrap.push(toolbar);
             
@@ -209,7 +232,9 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
                                        
                     var datapoints = [];
                     
-                    var yname = result.current_parameters[j].type.name + " (" + result.current_parameters[j].type.unit + ") from " + dataset.dataset.description;
+                    var yname = result.current_parameters[j].type.name;
+                    if(result.current_parameters[j].type.unit)
+                        yname = yname + " (" + result.current_parameters[j].type.unit + ")";
                     
                     for (var i=0; i<result.data.length; i++) {
                         datapoints[i] = [result.data[i][0], result.data[i][1+j]];
