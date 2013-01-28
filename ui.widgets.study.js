@@ -75,8 +75,31 @@ widgets.study.toolbar = function(obj){
 }
 
 
-widgets.study.well = function(name){
-    console.log(name);
+widgets.study.well = function(id, name){
+
+    if(id == null){
+        name = "<i>Choose</i>";
+    }
+
+    var rename = function(n){
+        if(n.length > 60) n = n.substr(0,60) + "...";
+        return "<b>Study: </b>" + n;
+    }
+
+    var btn = new Ext.Button({
+        text: rename(name),
+        handler: function(){
+            widgets.study.choose(function(id, well){
+                btn.setText(rename(well.tag_name));
+                btn.tag_id = id;
+                btn.fireEvent('wellupdate', id);
+            })
+        },
+        tag_id: id,
+        tag_name: name
+    });
+
+    return btn;
 }
 
 
@@ -149,7 +172,9 @@ widgets.study.choose = function(callback){
                 listeners: { 
                     celldblclick: function(grid, row, col, e){ 
                         win.close();
-                        callback(store.getAt(row).get("id"), widgets.study.well(store.getAt(row).get("name")));
+                        var id = store.getAt(row).get("id");
+                        var name = store.getAt(row).get("name");
+                        callback(id, widgets.study.well(id, name));
                     }
                 }
                 

@@ -134,6 +134,7 @@ widgets.dataset.sequence = function(id){
                     var action = plugin.dataset.sequence.analysis[p].actions[i];
                     menu.push({
                         text: action.name,
+                        icon: action.icon,
                         handler: function(){
                             action.action(id);
                         }
@@ -367,3 +368,59 @@ widgets.dataset.sequence.download = function(id){
     });
 }
 
+widgets.dataset.sequence.parameterwell = function(parms, selected){
+
+    var prefix = "<b>Parameter: </b>";
+
+    if(typeof selected === "undefined"){
+        selected = 1;
+    }
+
+    var name = "";
+
+    var themenu = new Ext.menu.Menu();
+
+    var update_dataset = function(obj){
+        
+        themenu.removeAll();
+
+        if(obj != null){
+            btn.setDisabled(false);
+
+            for(var i = 0; i < obj.length; i++){
+
+                if(obj[i].index == selected){
+                    btn.setText(prefix + obj[i].type.name);
+                }
+
+                themenu.add({
+                    text: obj[i].type.name,
+                    tag_name: obj[i].type.name,
+                    tag_id: obj[i].index,
+                    handler: function(menuItem){
+                        btn.setText(prefix + menuItem.tag_name);
+                        btn.tag_id = menuItem.tag_id;
+                        btn.fireEvent('wellupdate', menuItem.tag_id);
+                    }
+                });
+            }
+        }
+        else{
+            btn.setDisabled(true);
+        }
+
+    }
+
+
+    var btn = new Ext.Button({
+        text: prefix + name,
+        tag_id: selected,
+        update_dataset: update_dataset,
+        menu: themenu,
+        disabled: parms == null,
+    });
+
+    update_dataset(parms);
+
+    return btn;
+}

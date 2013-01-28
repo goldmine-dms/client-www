@@ -1,22 +1,51 @@
 widgets.dataset = {}
 
 
-widgets.dataset.well = function(name){
-    console.log(name); 
+widgets.dataset.well = function(id, name, study, limit_type){
+
+    if(id == null){
+        name = "<i>Choose</i>";
+    }
+
+    var rename = function(n){
+        if(n.length > 60) n = n.substr(0,60) + "...";
+        return "<b>Dataset: </b>" + n;
+    }
+
+    var update = function(id, name){
+        btn.setText(rename(name));
+        btn.tag_id = id;
+    }
+
+    var update_study = function(study){
+        btn.setDisabled(study === null);
+        btn.tag_study = study;
+        update(null, "<i>Choose</i>");
+    }
+
+    var btn = new Ext.Button({
+        text: rename(name),
+        handler: function(){
+            widgets.dataset.choose(function(id, well){
+                update(id, well.tag_name);
+                btn.fireEvent('wellupdate', id);
+
+            }, btn.tag_study, btn.tag_limit_type)
+        },
+        tag_id: id,
+        tag_name: name,
+        tag_study: study,
+        tag_limit_type: limit_type,
+        update: update,
+        update_study: update_study,
+        disabled: typeof study === "undefined",
+    });
+
+    return btn;
 }
 
 
 widgets.dataset.choose = function(callback, current_study, limit_type){
-
-    if(typeof current_study === "undefined"){
-        // call with widgets.study.choose
-
-        widgets.study.choose(function(id){
-            widgets.dataset.choose(callback, id, limit_type);
-        });
-
-        return;
-    }
 
     $.jsonRPC.request("study.get", {
         
@@ -90,7 +119,9 @@ widgets.dataset.choose = function(callback, current_study, limit_type){
                 listeners: { 
                     celldblclick: function(grid, row, col, e){ 
                         win.close();
-                        callback(store.getAt(row).get("id"), widgets.dataset.well(store.getAt(row).get("description")));
+                        var id = store.getAt(row).get("id");
+                        var name = store.getAt(row).get("description");
+                        callback(id, widgets.dataset.well(id, name, current_study));
                     }
                 }
                 
