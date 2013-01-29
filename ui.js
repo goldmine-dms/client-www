@@ -217,7 +217,7 @@ $(function() {
             connectionstatus.waitdialog = true;
             Ext.MessageBox.show({
                 title: 'Please wait',
-                msg: 'You command is being processed',
+                msg: 'Your command is being processed',
                 wait:true,
                 waitConfig: {interval:100}
             });
