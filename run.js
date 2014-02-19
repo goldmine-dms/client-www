@@ -19,10 +19,12 @@ listen("menu.browse.map.activity",  views.map.activity);
 listen("menu.browse.datatype",      views.browse.datatype);
 
 listen("menu.mydata.study",         views.browse.my_study);
+listen("menu.mydata.importer",      views.browse.importer);
 listen("menu.mydata.tempfile",      views.browse.tempfile);
 listen("menu.mydata.favorites",     views.browse.favorite);
 
 listen("menu.admin.restart",        admin.restart);
+listen("menu.admin.group.create",   admin.creategroup);
 listen("menu.admin.user.create",    admin.createuser);
 listen("menu.admin.group.browse",   views.group.browse);
 
