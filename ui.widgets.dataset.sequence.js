@@ -207,6 +207,11 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
             dataset.dataset.id, params, xmin, xmax
         ]];
         
+        // remove the uncertainty column before binning
+        var removefn = ['dataset.sequence.remove_column', [
+            'uncertainty'
+        ]];
+        
         var rebinfn = ['dataset.sequence.analysis.meanbin', 
         {   original_if_supersample: true,
             numbins: numbins
@@ -214,7 +219,7 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
     
         $.jsonRPC.request("chain", {
         
-            params: [getfn, rebinfn],  
+            params: [getfn, removefn, rebinfn],  
             success: function(result) {
                 
                 var figure = $("#figure");
