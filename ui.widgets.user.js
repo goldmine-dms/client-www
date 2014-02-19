@@ -7,15 +7,24 @@ widgets.user.changepassword = function() {
         frame:true, 
         defaultType:'textfield',
 
-        items:[{ 
-            fieldLabel:'New password', 
-            name:'password', 
-            inputType:'password', 
-        },{ 
-            fieldLabel:'Repeat password', 
-            name:'password2', 
-            inputType:'password', 
-        }],
+        items:
+        [
+            { 
+                fieldLabel:'Old password', 
+                name:'oldpassword', 
+                inputType:'password', 
+            },
+            { 
+                fieldLabel:'New password', 
+                name:'password', 
+                inputType:'password', 
+            },
+            { 
+                fieldLabel:'Repeat password', 
+                name:'password2', 
+                inputType:'password', 
+            }
+        ],
  
         buttons:[{ 
             text:'Change',
@@ -24,9 +33,9 @@ widgets.user.changepassword = function() {
                 var form = chpass_form.getForm();
                 if(form.findField('password').getValue() == form.findField('password2').getValue()
                     && form.findField('password').getValue() != ""){
-                    $.jsonRPC.request('user.change_password', {
-
-                        params: [form.findField('password').getValue()], 
+                    $.jsonRPC.request('user.change_password_user', {
+                        
+                        params: [form.findField('oldpassword').getValue(), form.findField('password').getValue()], 
                         success: function() {
                             Ext.Msg.alert('Success', "The password was changed"); 
                             chpass.close();
