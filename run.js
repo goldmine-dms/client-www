@@ -1,6 +1,6 @@
 /*
-This function is run when the page is reloaded, determining wether to display
-a login window or the main user interface.
+  This function is run when the page is reloaded, determining wether to display
+  a login window or the main user interface.
 */
 
 
@@ -30,35 +30,34 @@ listen("menu.admin.group.browse",   views.group.browse);
 
 
 $(function() {
-                
-    $.jsonRPC.setup({ endPoint: '/service' });
 
-    if($.cookie("auth") !== null)
-        user.authenticate();
-    else
-        user.login();
-        
-    $("#loading-mask").fadeOut();
-    
-    Ext.History.init();
-    
-    Ext.History.on('change', function(token){
-        if(token){
-            changeHistory(token);
-        }
-    });
-    
-    var token = Ext.History.getToken();
-    if(token && $.cookie("auth") !== null){
-        changeHistory(token);
+  $.jsonRPC.setup({ endPoint: '/service' });
+
+  if($.cookie("auth") !== null)
+    user.authenticate();
+  else
+    user.login();
+
+  $("#loading-mask").fadeOut();
+
+  Ext.History.init();
+
+  Ext.History.on('change', function(token){
+    if(token){
+      changeHistory(token);
     }
+  });
 
-    $.jsonRPC.request('info', {
-        params: [],
-        async: false,
-        success: function(result) {   
-            app.statusbar.text(result.server.organisation + " (" + result.server.name + ")");
+  var token = Ext.History.getToken();
+  if(token && $.cookie("auth") !== null){
+    changeHistory(token);
+  }
+
+  $.jsonRPC.request('info', {
+    params: [],
+    async: false,
+    success: function(result) {
+      app.statusbar.text(result.server.organisation + " (" + result.server.name + ")");
     }});
 
 });
-

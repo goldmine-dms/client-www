@@ -1,94 +1,95 @@
- <!DOCTYPE html>
- <html lang="en">
-    <head>
-        <title>Goldmine</title>
-        
-        <link rel="stylesheet" type="text/css" href="lib/ext-3.3.1/resources/css/ext-all.css" />
-        <link rel="stylesheet" type="text/css" href="lib/ext-3.3.1/resources/css/xtheme-gray.css" />
-        
-        <link rel="stylesheet" href="main.css" type="text/css" />            
-    </head>
-    
-    <body>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <meta charset="utf-8">
+  <head>
+    <title>Goldmine</title>
 
-        <script language="javascript">
-        var load = function(msg, pct){
-            document.getElementById("loading-txt").innerHTML = msg;
-            document.getElementById("loading-bar").style.width = (pct * 2) + "px"; 
-        };
-        </script> 
-    
-        <div id="loading-mask">
-            <div id="loading-msg">
-                <div id="loading-txt">Loading, please wait...</div>
-                <div id="loading-bar-wrap">
-                    <div id="loading-bar"></div>
-                </div>
-            </div>
-        </div>        
+    <link rel="stylesheet" type="text/css" href="lib/ext-3.3.1/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="lib/ext-3.3.1/resources/css/xtheme-gray.css" />
 
-        
-        <!-- This include fetches from an online source -->
-        <script>load('Google Maps',0);</script>
-        <script src="http://maps.google.com/maps/api/js?sensor=false"></script>  
-        
-        <!-- Library code -->
-        <script>load('jQuery',10);</script>
-        <script src="lib/jquery.js"></script>
-        
-        <script>load('ExtJS',30);</script>
-        <script src="lib/ext-3.3.1/adapter/jquery/ext-jquery-adapter-debug.js"></script>
-        <script src="lib/ext-3.3.1/ext-all-debug.js"></script>
-        
-        <script>load('ExtJS Extentions',70);</script>
-        <script src="lib/Ext.ux.GMapPanel3.js"></script>  
-        <script src="lib/Ext.ux.RowExpander.js"></script>  
+    <link rel="stylesheet" href="main.css" type="text/css" />
+  </head>
 
-        <script>load('jQuery Flot',75);</script>
-        <script src="lib/flot/jquery.flot.js"></script>
-        <script src="lib/flot/jquery.flot.selection.js"></script>
-        
-        <script>load('jQuery Extentions',80);</script>
-        <script src="lib/jquery.cookie.js"></script>
-        <script src="lib/jquery.jsonrpc.js"></script>        
- 
-        <script>load('Raphael', 83);</script>
-        <script src="lib/raphael.js"></script>
-        
-        <!-- Goldmine libs -->
-        <script>load('Goldmine libs',84);</script>
-        <script src="jquery.flot.hotstepper.js"></script>
+  <body>
 
-        <!-- Goldmine code -->
-        <script>load('Goldmine',86);</script>
-        <script src="plugin.js"></script>
-        <script src="utils.js"></script>
-        <script src="ui.utils.js"></script>
-        <script src="ui.widgets.js"></script>
-        <script src="ui.widgets.user.js"></script>
-        <script src="ui.widgets.study.js"></script>
-        <script src="ui.widgets.group.js"></script>
-        <script src="ui.widgets.dataset.js"></script>
-        <script src="ui.widgets.dataset.sequence.js"></script>
-        <script src="ui.js"></script>
-        <script src="user.js"></script>
-        <script src="admin.js"></script>
-        <script src="ui.views.master.js"></script>
-        <script src="ui.views.js"></script>
-        <script src="ui.views.doc.js"></script>
-        <script src="ui.views.group.js"></script>
+    <script language="javascript">
+     var load = function(msg, pct){
+       document.getElementById("loading-txt").innerHTML = msg;
+       document.getElementById("loading-bar").style.width = (pct * 2) + "px";
+     };
+    </script>
 
-        <script>load('Ready',100);</script>
-        <script src="run.js"></script>
-        
-        <!-- Fields required for history management -->
-        <form id="history-form" class="x-hidden">
-            <input type="hidden" id="x-history-field" />
-            <iframe id="x-history-frame"></iframe>
-        </form>
-        
-    </body>
+    <div id="loading-mask">
+      <div id="loading-msg">
+        <div id="loading-txt">Loading, please wait...</div>
+        <div id="loading-bar-wrap">
+          <div id="loading-bar"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- This include fetches from an online source -->
+    <script>load('Google Maps',0);</script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+    <!-- Library code -->
+    <script>load('jQuery',10);</script>
+    <script src="lib/jquery.js"></script>
+
+    <script>load('ExtJS',30);</script>
+    <script src="lib/ext-3.3.1/adapter/jquery/ext-jquery-adapter-debug.js"></script>
+    <script src="lib/ext-3.3.1/ext-all-debug.js"></script>
+
+    <script>load('ExtJS Extentions',70);</script>
+    <script src="lib/Ext.ux.GMapPanel3.js"></script>
+    <script src="lib/Ext.ux.RowExpander.js"></script>
+
+    <script>load('jQuery Flot',75);</script>
+    <script src="lib/flot/jquery.flot.js"></script>
+    <script src="lib/flot/jquery.flot.selection.js"></script>
+
+    <script>load('jQuery Extentions',80);</script>
+    <script src="lib/jquery.cookie.js"></script>
+    <script src="lib/jquery.jsonrpc.js"></script>
+
+    <script>load('Raphael', 83);</script>
+    <script src="lib/raphael.js"></script>
+
+    <!-- Goldmine libs -->
+    <script>load('Goldmine libs',84);</script>
+    <script src="jquery.flot.hotstepper.js"></script>
+
+    <!-- Goldmine code -->
+    <script>load('Goldmine',86);</script>
+    <script src="plugin.js"></script>
+    <script src="utils.js"></script>
+    <script src="ui.utils.js"></script>
+    <script src="ui.widgets.js"></script>
+    <script src="ui.widgets.user.js"></script>
+    <script src="ui.widgets.study.js"></script>
+    <script src="ui.widgets.group.js"></script>
+    <script src="ui.widgets.dataset.js"></script>
+    <script src="ui.widgets.dataset.sequence.js"></script>
+    <script src="ui.js"></script>
+    <script src="user.js"></script>
+    <script src="admin.js"></script>
+    <script src="ui.views.master.js"></script>
+    <script src="ui.views.js"></script>
+    <script src="ui.views.doc.js"></script>
+    <script src="ui.views.group.js"></script>
+
+    <script src="ui.manage.js"></script>
+
+    <script>load('Ready',100);</script>
+    <script src="run.js"></script>
+
+    <!-- Fields required for history management -->
+    <form id="history-form" class="x-hidden">
+      <input type="hidden" id="x-history-field" />
+      <iframe id="x-history-frame"></iframe>
+    </form>
+
+  </body>
 
 </html>
-
-
