@@ -20,7 +20,7 @@ body.x-body-masked .x-window-plain .x-window-mc {
     font-size: 11px;
     text-align: center;
     padding: 7px;
-       
+
 }
 
 .whitewin .x-window-body {
@@ -51,23 +51,23 @@ body.x-body-masked .x-window-plain .x-window-mc {
 
 
 #loading-mask {
-    background-color: #fbfbfb; 
-    height:100%; 
-    position:absolute; 
-    left:0; 
-    top:0; 
+    background-color: #fbfbfb;
+    height:100%;
+    position:absolute;
+    left:0;
+    top:0;
     width:100%;
     z-index:20000;
 }
 
 #loading-msg {
-    height:auto; 
-    position:absolute; 
+    height:auto;
+    position:absolute;
     width: 100%;
-    text-align: center; 
-    top:40%; 
-    z-index:20001; 
-    font-family: sans-serif; 
+    text-align: center;
+    top:40%;
+    z-index:20001;
+    font-family: sans-serif;
     font-size: 9pt;
 }
 
@@ -87,12 +87,12 @@ body.x-body-masked .x-window-plain .x-window-mc {
 
 
 #ajax-load {
-    height:auto; 
-    position:absolute; 
-    right: 50%; 
-    top: 35%; 
-    z-index:20001; 
-    font-family: sans-serif; 
+    height:auto;
+    position:absolute;
+    right: 50%;
+    top: 35%;
+    z-index:20001;
+    font-family: sans-serif;
     font-size: 9pt;
     /*border: 1px solid #ddd;
     background-color: #fbfbfb;*/
@@ -107,18 +107,23 @@ body.x-body-masked .x-window-plain .x-window-mc {
 }
 
 #figure{
-    height: 250px; 
+    height: 250px;
     margin: 0px 20px 0px 20px;
 }
 
 #figureoverview {
-    height: 50px; 
+    height: 50px;
     margin: 20px 20px 10px 20px;
 }
 
 #figurexlabel {
-    margin: 0px 0px 10px 0px; 
+    margin: 0px 0px 10px 0px;
     text-align: center;
     font-family: arial,tahoma,helvetica,sans-serif;
     font-size: 11px;
+}
+
+/* required items in forms */
+form .required {
+  font-weight: bold;
 }

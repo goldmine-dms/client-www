@@ -71,33 +71,35 @@ views.show.activity = function(id){
 
   var header = ["ID", "Name", "Location.Latitude", "Location.Longitude", "Location.Elevation"];
 
-  views.show.master(id, "activity", "activity.get", "name", header, "description", function(obj){
+  views.show.master(
+    id, "activity", "activity.get", "name", header, "description",
+    function(obj) {
 
-    var store = jsonstore(obj.studies, ['name', 'description', 'id']);
-    var columns = [
-      { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
-      { header: 'Name', width: 250, dataIndex: 'name'},
-      { header: 'Description', fixed: false, dataIndex: 'description'}
-    ];
+      var store = jsonstore(obj.studies, ['name', 'description', 'id']);
+      var columns = [
+        { header: 'ID', width: 250, dataIndex: 'id', hidden: true},
+        { header: 'Name', width: 250, dataIndex: 'name'},
+        { header: 'Description', fixed: false, dataIndex: 'description'}
+      ];
 
-    return [widgets.easy_gp('Studies', store, columns, views.show.study)]
-  },
-                    function(obj){
+      return [widgets.easy_gp('Studies', store, columns, views.show.study)]
+    },
+    function(obj){
 
-                      var backProject = new Ext.Action({
-                        text: 'Project (' + obj.project.name + ')',
-                        icon: 'icons/arrow_left.png',
-                        handler: function(){
-                          views.show.project(obj.project.id);
-                        }
-                      });
+      var backProject = new Ext.Action({
+        text: 'Project (' + obj.project.name + ')',
+        icon: 'icons/arrow_left.png',
+        handler: function(){
+          views.show.project(obj.project.id);
+        }
+      });
 
-                      var favorite = widgets.favorite(obj.id,  "activity");
+      var favorite = widgets.favorite(obj.id,  "activity");
 
-                      return [backProject, "->", favorite];
-                    }
+      return [backProject, "->", favorite];
+    }
 
-                   );
+  );
 }
 
 views.show.study = function(id){

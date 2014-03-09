@@ -1,3 +1,4 @@
+"use strict";
 var views = {}
 
 views.browse = {}
@@ -178,7 +179,7 @@ views.show.master = function(id, name, rpcfunction, title, header, description, 
       });
 
       if(typeof contentcallback === "function"){
-        cbdata = contentcallback(obj);
+        var cbdata = contentcallback(obj);
         for(var i = 0; i < cbdata.length; i++){
           wrap.items.add(cbdata[i]);
         }

@@ -112,11 +112,15 @@ views.doc.show = function(name){
       app.main.prepare();
       app.main.setTitle("Documentation for " + name);
 
+      var html = '<h1>' + obj.method + '</h1>';
+      if (obj.doc)
+        html += '<pre>' + obj.doc + '</pre>';
+
       var wrap = new Ext.Panel({
         layout: 'fit',
         border: false,
         cls: 'layoutpad txt',
-        html: '<pre>' + obj + '</pre>'
+        html: html
       });
 
       app.main.add(wrap);

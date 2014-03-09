@@ -43,6 +43,19 @@ var toolbar = new Ext.Toolbar({
       ]
     },
     {
+      text: 'Add',
+      id: 'addmenu',
+      icon: 'icons/add.png',
+      menu: [
+        {text: 'Project', handler: broadcast('menu.add', 'project')},
+        {text: 'Activity', handler: broadcast('menu.add', 'activity')},
+        {text: 'Study', handler: broadcast('menu.add', 'study')},
+        '-',
+        {text: 'Datatype', handler: broadcast('menu.add', 'dataset.type')},
+        {text: 'Location', handler: broadcast('menu.add', 'location')}
+      ]
+    },
+    {
       text: 'Administration',
       id: 'adminmenu',
       icon: 'icons/cog.png',

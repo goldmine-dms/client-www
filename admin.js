@@ -138,6 +138,8 @@ admin.creategroup = function(){
         data : groups
       });
 
+      console.log(store);
+
       var combo = new Ext.form.ComboBox({
         // tpl: '<tpl for="."><div ext:qtip="{state}. {nick}" class="x-combo-list-item">{state}</div></tpl>',
         name: 'parentgroup',

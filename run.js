@@ -28,6 +28,8 @@ listen("menu.admin.group.create",   admin.creategroup);
 listen("menu.admin.user.create",    admin.createuser);
 listen("menu.admin.group.browse",   views.group.browse);
 
+// Generic add item menu
+listen("menu.add",   views.add);
 
 $(function() {
 
