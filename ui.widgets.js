@@ -1,6 +1,6 @@
 var widgets = {};
 
-widgets.easy_pg = function(title, obj, limit){
+widgets.easy_pg = function(title, obj, limit) {
   var p = new Ext.grid.PropertyGrid({
     title: title,
     columnWidth: 1,
@@ -21,11 +21,14 @@ widgets.easy_pg = function(title, obj, limit){
   p.getColumnModel().getColumnById('name').sortable = false; // set sorting of first column to false
   p.setSource(limit_dict(obj, limit)); // Now load data
   return p;
-}
+};
 
-widgets.easy_gp = function(title, store, columns, callback, idcol){
+widgets.easy_gp = function(title, store, columns, callback, idcol, multiselect) {
+  // multiselect: ability to select multiple rows. If true, the
+  // argument for callback is an array.
 
   if (typeof idcol === "undefined") idcol = "id";
+  if (typeof multiselect === 'undefined') multiselect = false;
 
   return new Ext.grid.GridPanel({
     title: "<img src='icons/arrow_right.png' style='vertical-align: middle'/> " + title,
@@ -46,14 +49,21 @@ widgets.easy_gp = function(title, store, columns, callback, idcol){
       forceFit:true
     },
     listeners: {
-      cellclick: function(grid, row, col, e)
-      { callback(store.getAt(row).get(idcol)); }
+      cellclick: function(grid, row, col, e) {
+        if (!multiselect) {
+          callback(store.getAt(row).get(idcol));
+        } else {
+          var rows =
+            grid.getSelectionModel().getSelections()
+            .map(function (x) { return x.data.index;});
+          callback(rows);
+        }
+      }
     }
-  }
-                               );
-}
+  });
+};
 
-widgets.lineage = function(study_id){
+widgets.lineage = function(study_id) {
 
   var panel = new Ext.Panel({
     xtype: 'panel', layout: 'fit', colspan: 2, cls: 'layoutpad',
@@ -64,12 +74,12 @@ widgets.lineage = function(study_id){
 
   lineageinto(study_id, '#lineage', panel);
 
-  return panel
-}
+  return panel;
+};
 
 
 
-widgets.favorite = function(id, type){
+widgets.favorite = function(id, type) {
 
   var action = new Ext.Action({
     icon: 'icons/heart_gray.png',

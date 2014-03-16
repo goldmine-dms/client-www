@@ -1,4 +1,4 @@
-widgets.dataset.sequence = function(id){
+widgets.dataset.sequence = function(id) {
 
   var wrap = [];
 
@@ -128,10 +128,10 @@ widgets.dataset.sequence = function(id){
         ]
       });
 
-      for(var p in plugin.dataset.sequence.analysis){
+      for (var p in plugin.dataset.sequence.analysis) {
         var menu = [];
 
-        for(var i = 0; i < plugin.dataset.sequence.analysis[p].actions.length; i++){
+        for (var i = 0; i < plugin.dataset.sequence.analysis[p].actions.length; i++) {
           var action = plugin.dataset.sequence.analysis[p].actions[i];
           menu.push({
             text: action.name,
@@ -168,7 +168,6 @@ widgets.dataset.sequence = function(id){
 
       wrap.push(figure);
 
-
       var parameterstore = jsonstore(obj.parameters, ['type.name', 'type.unit', 'storage', 'uncertainty_type', 'uncertainty_value', 'index']);
       var parametercolumns = [
         { header: 'Index', width: 20, dataIndex: 'index'},
@@ -180,28 +179,28 @@ widgets.dataset.sequence = function(id){
         { header: 'Metadata', fixed: false, dataIndex: 'metadata'}
       ];
 
-      var parameters = widgets.easy_gp('Parameters', parameterstore, parametercolumns, function(index){
-        widgets.dataset.sequence.plot(obj, [index]);
-      }, "index");
+      var parameters = widgets.easy_gp('Parameters', parameterstore, parametercolumns, function(index) {
+        widgets.dataset.sequence.plot(obj, index);
+      }, "index", true);
 
       wrap.push(parameters);
 
     }
   });
   return wrap;
-}
+};
 
 widgets.dataset.sequence.isplotting = false;
 widgets.dataset.sequence.overviewplot = null;
 widgets.dataset.sequence.figureplot = null;
 
-widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
+widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax) {
 
   var numbins = 750;
 
   Ext.getCmp("figurewrap").show();
 
-  if(widgets.dataset.sequence.isplotting !== true){
+  if (widgets.dataset.sequence.isplotting !== true) {
     widgets.dataset.sequence.isplotting = true;
 
     var getfn = ['dataset.sequence.get_data', [
@@ -235,27 +234,26 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
         var overviewdata = [];
         var hooks = [];
 
-        for(var j=0; j<params.length; j++){
+        for (var j=0; j<params.length; j++) {
 
           var datapoints = [];
 
           var yname = result.current_parameters[j].type.name;
-          if(result.current_parameters[j].type.unit)
+          if (result.current_parameters[j].type.unit)
             yname = yname + " (" + result.current_parameters[j].type.unit + ")";
 
           for (var i=0; i<result.data.length; i++) {
             datapoints[i] = [result.data[i][0], result.data[i][1+j]];
           }
 
-          if(result.data.length < numbins){
+          if (result.data.length < numbins){
             var hotstep = null;
-            if(dataset.index_marker_type == "span"){
+            if (dataset.index_marker_type == "span") {
               hotstep = dataset.index_marker_location;
             }
 
             data.push({data: datapoints, points: {show: false}, lines: {show: true}, hotstep: {type:hotstep, discrete: false}, label: yname});
-          }
-          else{
+          } else {
             data.push({data: datapoints, points: {show: false}, lines: {show: true}, label: yname});
           }
 
@@ -263,25 +261,24 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
         }
 
 
-        var transform = function(axis, inverse){
-          return function(v){
+        var transform = function(axis, inverse) {
+          return function(v) {
 
-            if(Ext.getCmp("sequence.plot."+axis+".inverted").checked) v = -v;
+            if (Ext.getCmp("sequence.plot."+axis+".inverted").checked) v = -v;
 
-            if(!inverse){
-              if(Ext.getCmp("sequence.plot."+axis+".log").checked)
-                return Math.log(v)
+            if (!inverse) {
+              if (Ext.getCmp("sequence.plot."+axis+".log").checked)
+                return Math.log(v);
               else
-                return v
-            }
-            else{
-              if(Ext.getCmp("sequence.plot."+axis+".log").checked)
-                return Math.exp(v)
+                return v;
+            } else {
+              if (Ext.getCmp("sequence.plot."+axis+".log").checked)
+                return Math.exp(v);
               else
-                return v
+                return v;
             }
           }
-        }
+        };
 
         var options = {
           selection: { mode: "x" },
@@ -340,22 +337,22 @@ widgets.dataset.sequence.plot = function(dataset, params, xmin, xmax){
 
     });
   }
-}
+};
 
-widgets.dataset.sequence.plot.redraw = function(){
-  (function(){
-    if(widgets.dataset.sequence.figureplot){
+widgets.dataset.sequence.plot.redraw = function() {
+  (function() {
+    if (widgets.dataset.sequence.figureplot) {
       widgets.dataset.sequence.figureplot.setupGrid();
       widgets.dataset.sequence.figureplot.draw();
     }
-    if(widgets.dataset.sequence.overviewplot){
+    if (widgets.dataset.sequence.overviewplot) {
       widgets.dataset.sequence.overviewplot.setupGrid();
       widgets.dataset.sequence.overviewplot.draw();
     }
   }).defer(100);
-}
+};
 
-widgets.dataset.sequence.download = function(id){
+widgets.dataset.sequence.download = function(id) {
 
   var getfn = ['dataset.sequence.get_data', id];
   var asciifn = ['dataset.sequence.export.to_ascii'];
@@ -372,9 +369,9 @@ widgets.dataset.sequence.download = function(id){
 
     }
   });
-}
+};
 
-widgets.dataset.sequence.parameterwell = function(parms, selected){
+widgets.dataset.sequence.parameterwell = function(parms, selected) {
 
   var prefix = "<b>Parameter: </b>";
 
@@ -386,16 +383,16 @@ widgets.dataset.sequence.parameterwell = function(parms, selected){
 
   var themenu = new Ext.menu.Menu();
 
-  var update_dataset = function(obj){
+  var update_dataset = function(obj) {
 
     themenu.removeAll();
 
-    if(obj != null){
+    if (obj != null) {
       btn.setDisabled(false);
 
-      for(var i = 0; i < obj.length; i++){
+      for (var i = 0; i < obj.length; i++) {
 
-        if(obj[i].index == selected){
+        if (obj[i].index == selected) {
           btn.setText(prefix + obj[i].type.name);
         }
 
@@ -410,12 +407,11 @@ widgets.dataset.sequence.parameterwell = function(parms, selected){
           }
         });
       }
-    }
-    else{
+    } else{
       btn.setDisabled(true);
     }
 
-  }
+  };
 
 
   var btn = new Ext.Button({
@@ -429,4 +425,4 @@ widgets.dataset.sequence.parameterwell = function(parms, selected){
   update_dataset(parms);
 
   return btn;
-}
+};
