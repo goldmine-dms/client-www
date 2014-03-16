@@ -1,14 +1,11 @@
 views.add = function(type) {
 
+  // Extract non-null values from Object
   function getKVValues(kv) {
     var values = [];
     for (var k in kv) {
-      console.log(k);
-      if (!kv[k])
+      if (!kv[k]) {
         continue;
-      if (k.match(/_id$/) !== null) {
-        console.log(kv[k]);
-        values.push(kv[k]['id']);
       } else {
         values.push(kv[k]);
       }
@@ -16,6 +13,7 @@ views.add = function(type) {
     return values;
   }
 
+  // Call the API documentation to get a list of arguments
   function getArguments(cmd) {
     var args;
     $.jsonRPC.request('doc.help', {
@@ -32,7 +30,7 @@ views.add = function(type) {
   // input args. args ending in '_id' are presumed to be foreign keys
   // for whatever comes before '_id'.
   function createItems(args) {
-    // strip parens surrounding args
+    // strip parens surrounding arguments
     args = args.replace(/[()]/g, '');
     args = args.split(', ');
 
@@ -111,7 +109,6 @@ views.add = function(type) {
         $.jsonRPC.request(type + '.create', {
           params: getKVValues(form.getFieldValues())
             .filter(function (x) {
-              console.log(typeof(this));
               return(true);
             }),
           success: function(result) {
