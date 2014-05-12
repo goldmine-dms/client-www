@@ -8,6 +8,7 @@
 
 listen("menu.user.logout",          user.login);
 listen("menu.user.changepassword",  widgets.user.changepassword);
+listen("menu.user.settings",        widgets.user.settings);
 
 listen("menu.apidocs",              views.doc.browse);
 
@@ -31,6 +32,22 @@ listen("menu.admin.group.browse",   views.group.browse);
 // Generic add item menu
 listen("menu.add",   views.add);
 
+// Global variable for settings
+var settingsstore;
+var settings = function (key) {
+  var key2 = settingsstore.data.items.filter(function (k) {
+    return (k.data.key == key);
+  });
+  key2 = key2[0];
+
+  if (key2 !== undefined) {
+    return key2.data.value;
+  } else {
+    return false;
+  }
+};
+
+
 $(function() {
 
   $.jsonRPC.setup({ endPoint: '/service' });
@@ -51,7 +68,7 @@ $(function() {
   });
 
   var token = Ext.History.getToken();
-  if(token && $.cookie("auth") !== null){
+  if (token && $.cookie("auth") !== null) {
     changeHistory(token);
   }
 

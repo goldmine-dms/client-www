@@ -20,7 +20,7 @@ widgets.dataset.sequence = function(id) {
           {xtype: 'toolbar', items:
            [{xtype: 'tbspacer', width: 5},
             {
-              text: '<b>Download</b>',
+              text: '<b>Download...</b>',
               icon: 'icons/page_save.png',
               handler: function(){
                 widgets.dataset.sequence.download(id);
@@ -353,14 +353,14 @@ widgets.dataset.sequence.plot.redraw = function() {
 };
 
 widgets.dataset.sequence.download = function(id) {
-
   var getfn = ['dataset.sequence.get_data', id];
   var asciifn = ['dataset.sequence.export.to_ascii'];
-  var tmpfilefn = ['tempfile.create', 'dataset_download_'+ id +'.txt'];
+  var compressfn = ['plugin.file.compress.zip.compress'];
+  var tmpfilefn = ['tempfile.create', 'dataset_download_'+ id +'.txt.zip'];
 
   $.jsonRPC.request("chain", {
 
-    params: [getfn, asciifn, tmpfilefn],
+    params: [getfn, asciifn, compressfn, tmpfilefn],
     async: true,
     success: function(result) {
       filename = result[0];

@@ -66,9 +66,6 @@ user.login = function(message, useloadmask) {
 
   });
 
-
-
-
   var win = new Ext.Window({
     layout:'fit',
     width:300,
@@ -94,7 +91,34 @@ user.authenticate = function(message, useloadmask) {
   $.jsonRPC.request('user.whoami', {
     params: [],
     success: function(result) {
-      user.current = result
+      user.current = result;
+
+      // Load user settings
+      $.jsonRPC.request("user.setting.all", {
+        params: [],
+        success: function(result) {
+          // global
+          settingsstore = new Ext.data.JsonStore({
+            id: 'settings-store',
+            fields: ['id', 'key', 'value'],
+            data: result,
+            listeners: ['add']
+          });
+
+          settingsstore.on('add', function(e) {
+            $.jsonRPC.request('user.setting.set', {
+              params: {
+                key: e.key,
+                value: record.value
+              },
+              success: function(res) {
+                console.log('add');
+                console.log(res);
+              }
+            });
+            console.log(e);
+          });
+        }});
 
       toolbar.items.get("usermenu").setText(user.current.username);
 

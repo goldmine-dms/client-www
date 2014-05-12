@@ -155,3 +155,135 @@ widgets.user.choose = function(callback){
   });
 
 }
+
+widgets.user.settings = function() {
+  $.jsonRPC.request("user.setting.all", {
+    params: [],
+    success: function(settings) {
+
+      var store = new Ext.data.JsonStore({
+        id: 'settings-store',
+        fields: ['id', 'key', 'value'],
+        data: settings
+      });
+
+      var columns = [
+        {header: "ID", dataIndex: "id", hidden: true},
+        {header: "Key",
+         dataIndex: "key",
+         editor: {
+           xtype: 'textfield'
+         },
+        },
+        {
+          header: "Value",
+          dataIndex: "value",
+          editor: {
+           xtype: 'textfield'
+         },
+        },
+      ];
+
+      var toolbar = new Ext.Toolbar({
+        items: [
+          {
+            text: 'Add',
+            id: 'settings-add',
+            icon: 'icons/add.png',
+            handler: function(stuff) {
+              var newRow = new store.recordType();
+              store.insert(0, newRow);
+            },
+          },
+          {
+            text: 'Remove',
+            id: 'settings-remove',
+            icon: 'icons/delete.png',
+            handler: function(obj) {
+              console.log(gridpanel);
+              var gridpanel = Ext.getCmp('settings-grid-panel');
+              var selected = gridpanel.getSelectionModel().getSelections();
+              var existing = selected.filter(function (row) {
+                return (row.data.id !== undefined);
+              });
+              var keys = existing.map(function (row) {
+                return (row.data.key);
+              });
+
+              $.jsonRPC.request('user.setting.remove', {
+                async: true,
+                params: [keys],
+                success: function(res) {
+                  gridpanel.store.remove(existing);
+                },
+              });
+            },
+          },
+          {
+            text: 'Autosave',
+            id: 'settings-autosave',
+            enableToggle: true,
+            pressed: true,
+            toolTip: "When enabled, changes will be saved automatically.",
+            handler: function(obj) {
+              Ext.getCmp('settings-save').setDisabled(!Ext.getCmp('settings-save').disabled);
+            },
+          },
+          {
+            text: 'Save',
+            id: 'settings-save',
+            toolTip: "Save items.",
+            disabled: true,
+            handler: function(stuff) {
+              console.log(stuff);
+            },
+          },
+        ]
+      });
+
+      var gridpanel = new Ext.grid.EditorGridPanel({
+        id: 'settings-grid-panel',
+        emptyText: 'No settings',
+        autoHeight: true,
+        viewConfig: {
+          forceFit: true,
+        },
+        colModel: new Ext.grid.ColumnModel({
+          defaults: {
+            sortable: true,
+          },
+          columns: columns
+        }),
+        selModel: new Ext.grid.RowSelectionModel({}),
+        store: store,
+      });
+
+      gridpanel.on('afteredit', function(e) {
+        changed = e;
+        console.log(e);
+        if (e.record.data.id === undefined) {
+          // not yet submitted, create a new settings record
+          if (e.record.data.key !== undefined && e.record.data.value !== undefined) {
+            var store = e.grid.getStore();
+            store.add(e.record);
+          }
+        };
+      });
+
+      var win = new Ext.Window({
+        width:500,
+        height:500,
+        resizable: true,
+        plain: true,
+        border: false,
+        autoScroll: true,
+        cls: "whitewin",
+        title: "User settings",
+        items: [toolbar, gridpanel]
+      });
+
+      win.show();
+    }
+  });
+
+};
